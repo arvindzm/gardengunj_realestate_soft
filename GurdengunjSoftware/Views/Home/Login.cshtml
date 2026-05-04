@@ -1,0 +1,408 @@
+@model RealEstateRegalSpace.Models.Login
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Gurdengunj Infratech | Portal Login</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <link rel="icon" href="../files/assets/images/logo.png" type="image/x-icon">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="../files/bower_components/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="../files/assets/icon/font-awesome/css/font-awesome.min.css">
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #fff;
+            color: #333;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .login-page {
+            display: flex;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        /* ===== LEFT: Form Area ===== */
+        .form-area {
+            width: 55%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            background: #fff;
+            z-index: 2;
+        }
+
+        .login-card {
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .login-card h1 {
+            font-size: 2.4rem;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 8px;
+        }
+
+        /* Green circle accent */
+        .green-ring {
+            width: 70px;
+            height: 70px;
+            border: 7px solid #d1fae5;
+            border-top-color: #4ade80;
+            border-radius: 50%;
+            margin: 0 auto 18px;
+            animation: spin 3s linear infinite;
+        }
+
+        @@keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .login-card .tagline {
+            color: #888;
+            font-size: 0.92rem;
+            margin-bottom: 28px;
+        }
+
+        /* Form inputs */
+        .field {
+            margin-bottom: 18px;
+            text-align: left;
+            position: relative;
+        }
+
+        .field .form-control {
+            width: 100%;
+            height: 52px;
+            background: #f0f7ff;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 0 42px 0 18px;
+            font-size: 0.95rem;
+            font-family: 'Poppins', sans-serif;
+            color: #333;
+            transition: all 0.25s ease;
+        }
+
+        .field .form-control:focus {
+            border-color: #4ade80;
+            background: #fff;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(74, 222, 128, 0.15);
+        }
+
+        .field .toggle-eye {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #aaa;
+            font-size: 1rem;
+            transition: color 0.2s;
+        }
+
+        .field .toggle-eye:hover {
+            color: #4ade80;
+        }
+
+        /* Submit button */
+        .btn-green {
+            width: 100%;
+            height: 52px;
+            background: linear-gradient(135deg, #4ade80, #22c55e);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.05rem;
+            font-weight: 600;
+            font-family: 'Poppins', sans-serif;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 6px;
+        }
+
+        .btn-green:hover {
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(34, 197, 94, 0.35);
+        }
+
+        .btn-green:active {
+            transform: translateY(0);
+        }
+
+        /* Forgot link */
+        .forgot-link {
+            display: inline-block;
+            margin-top: 18px;
+            color: #3b82f6;
+            text-decoration: none;
+            font-size: 0.88rem;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .forgot-link:hover {
+            color: #2563eb;
+            text-decoration: underline;
+        }
+
+        /* Logo and register text */
+        .bottom-section {
+            margin-top: 35px;
+        }
+
+        .bottom-section img {
+            max-width: 130px;
+            opacity: 0.85;
+        }
+
+        .bottom-section p {
+            margin-top: 12px;
+            font-size: 0.82rem;
+            color: #999;
+        }
+
+        .bottom-section a {
+            color: #3b82f6;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        /* Error styles */
+        .alert-error {
+            background: #fef2f2;
+            color: #dc2626;
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-top: 18px;
+            font-size: 0.88rem;
+            border: 1px solid #fecaca;
+            text-align: left;
+        }
+
+        .errortext {
+            border-color: #ef4444 !important;
+            background-color: #fef2f2 !important;
+        }
+
+        /* ===== RIGHT: Hero Image ===== */
+        .hero-side {
+            width: 45%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-side .hero-img {
+            position: absolute;
+            right: 0;
+            bottom: 0;
+            height: 100%;
+            width: auto;
+            object-fit: contain;
+            object-position: right bottom;
+        }
+
+        /* Blinking Logo */
+        .logo-blink-wrap {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            z-index: 100;
+        }
+
+        .logo-blink-wrap img {
+            width: 130px;
+            animation: logoBling 1.5s infinite ease-in-out;
+        }
+
+        @@keyframes logoBling {
+            0%   { opacity: 1; transform: scale(1); }
+            50%  { opacity: 0.6; transform: scale(1.05); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        /* ===== Responsive ===== */
+        @@media (max-width: 991px) {
+            .login-page {
+                flex-direction: column;
+            }
+
+            .form-area {
+                width: 100%;
+                padding: 30px 20px;
+                min-height: 100vh;
+            }
+
+            .hero-side {
+                display: none;
+            }
+
+            .login-card {
+                max-width: 380px;
+            }
+        }
+
+        @@media (max-width: 480px) {
+            .login-card h1 {
+                font-size: 2rem;
+            }
+
+            .field .form-control {
+                height: 48px;
+                font-size: 0.9rem;
+            }
+
+            .btn-green {
+                height: 48px;
+                font-size: 0.95rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="login-page">
+        <!-- Blinking Logo Top Right (Universal) -->
+        <div class="logo-blink-wrap">
+            <img src="../files/assets/images/logo.png" alt="Gurdengunj Logo" />
+        </div>
+
+        <!-- LEFT: Login Form -->
+        <div class="form-area">
+            <div class="login-card">
+                <h1>Login</h1>
+                <div class="green-ring"></div>
+                <p class="tagline">Please enter your credentials to login</p>
+
+                @using (Html.BeginForm("Login", "Home", FormMethod.Post, new { @id = "form1", enctype = "multipart/form-data" }))
+                {
+                    <div class="field">
+                        @Html.TextBoxFor(m => m.loginId, new { @class = "form-control", @placeholder = "Enter Login ID", @autocomplete = "off", @id = "loginId" })
+                    </div>
+
+                    <div class="field">
+                        @Html.PasswordFor(m => m.password, new { @class = "form-control", @placeholder = "Enter Password", @id = "passwordField" })
+                        <i class="fa fa-eye toggle-eye" id="toggleIcon" onclick="togglePassword()"></i>
+                    </div>
+
+                    <button type="submit" class="btn-green" onclick="return fvalidate();">SUBMIT</button>
+
+                    <a href="#" class="forgot-link" data-toggle="modal" data-target="#myModal">Forgot Password?</a>
+                }
+
+                @{
+                    if (TempData["Login"] != null)
+                    {
+                        <div class="alert-error">
+                            <i class="fa fa-exclamation-triangle"></i> @TempData["Login"]
+                        </div>
+                    }
+                }
+
+           
+            </div>
+        </div>
+
+        <!-- RIGHT: Hero Image -->
+        <div class="hero-side">
+            <!-- Hero Person Image -->
+            <img class="hero-img" src="../files/assets/images/login_hero.png" alt="Welcome" />
+        </div>
+
+    </div>
+
+    <!-- Forgot Password Modal -->
+    <div class="modal fade" id="myModal" role="dialog">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content" style="border-radius: 15px; border: none;">
+                <div class="modal-header" style="border-bottom: 1px solid #eee;">
+                    <h5 class="modal-title" style="font-weight: 600;">Reset Password</h5>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body" style="padding: 25px;">
+                    <p style="color: #666; margin-bottom: 20px;">Enter your Login ID to receive your password on your registered mobile.</p>
+                    <input type="text" class="form-control" placeholder="Enter Login ID" id="login" />
+                    <button type="button" class="btn-green" onclick="return getpassword();" style="margin-top: 20px;">Request Password</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script type="text/javascript" src="../files/bower_components/jquery/js/jquery.min.js"></script>
+    <script type="text/javascript" src="../files/bower_components/bootstrap/js/bootstrap.min.js"></script>
+
+    <script>
+        function fvalidate() {
+            $(".errortext").removeClass("errortext");
+            let isValid = true;
+
+            if ($('#loginId').val() == '') {
+                $("#loginId").addClass('errortext');
+                $('#loginId').focus();
+                isValid = false;
+            } else if ($('#passwordField').val() == '') {
+                $("#passwordField").addClass('errortext');
+                $('#passwordField').focus();
+                isValid = false;
+            }
+            return isValid;
+        }
+
+        function getpassword() {
+            if ($('#login').val() == '') {
+                $("#login").addClass('errortext');
+                $('#login').focus();
+                return false;
+            }
+            $.ajax({
+                url: "/Home/GetPassword",
+                Type: "Get",
+                DataType: "JSON",
+                data: { LoginId: $("#login").val() },
+                success: function (data) {
+                    if (data.Result == "1") {
+                        alert("Password sent to your registered mobile number.");
+                        $('#myModal').modal('hide');
+                    } else {
+                        alert("Invalid LoginId");
+                    }
+                }
+            });
+        }
+
+        function togglePassword() {
+            var password = document.getElementById("passwordField");
+            var icon = document.getElementById("toggleIcon");
+            if (password.type === "password") {
+                password.type = "text";
+                icon.classList.remove("fa-eye");
+                icon.classList.add("fa-eye-slash");
+            } else {
+                password.type = "password";
+                icon.classList.remove("fa-eye-slash");
+                icon.classList.add("fa-eye");
+            }
+        }
+    </script>
+</body>
+</html>
