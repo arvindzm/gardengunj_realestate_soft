@@ -2,6 +2,7 @@ using RealEstateRegalSpace.Models;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -25,47 +26,58 @@ namespace RealEstateRegalSpace.Controllers
             {
                 obj.password = Crypto.Encrypt(obj.password);
                 DataSet ds = obj.CheckLogin();
-                if (ds != null) 
+                if (ds != null && ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0) 
                 {
-                    if (ds.Tables[0].Rows[0]["Msg"].ToString() == "1")
+                    DataRow dr = ds.Tables[0].Rows[0];
+                    string msg = ds.Tables[0].Columns.Contains("Msg") ? dr["Msg"].ToString() : "";
+                    if (msg == "1")
                     {
-                        if (ds.Tables[0].Rows[0]["UserType"].ToString() == "Associate")
+                        string userType = ds.Tables[0].Columns.Contains("UserType") ? dr["UserType"].ToString() : "";
+                        if (userType.Equals("Associate", StringComparison.OrdinalIgnoreCase))
                         {
-                            Session["Pk_userId"] = ds.Tables[0].Rows[0]["Pk_userId"].ToString();
-                            Session["FullName"] = ds.Tables[0].Rows[0]["FullName"].ToString();
-                            Session["LoginId"] = ds.Tables[0].Rows[0]["LoginId"].ToString();
-                            Session["CommissionType"] = ds.Tables[0].Rows[0]["CommissionType"].ToString();
-                            Session["UserImage"] = ds.Tables[0].Rows[0]["Profile"].ToString();
-                            if (ds.Tables[0].Rows[0]["CommissionType"].ToString()=="Level")
+                            Session["Pk_userId"] = ds.Tables[0].Columns.Contains("Pk_userId") ? dr["Pk_userId"].ToString() : "";
+                            Session["FullName"] = ds.Tables[0].Columns.Contains("FullName") ? dr["FullName"].ToString() : "";
+                            Session["LoginId"] = ds.Tables[0].Columns.Contains("LoginId") ? dr["LoginId"].ToString() : "";
+                            Session["CommissionType"] = ds.Tables[0].Columns.Contains("CommissionType") ? dr["CommissionType"].ToString() : "";
+                            Session["UserImage"] = ds.Tables[0].Columns.Contains("Profile") ? dr["Profile"].ToString() : "";
+                            
+                            string commType = Session["CommissionType"] != null ? Session["CommissionType"].ToString() : "";
+                            if (commType.Equals("Level", StringComparison.OrdinalIgnoreCase))
                             {
                                 return RedirectToAction("DashBoard", "Associate");
                             }
-                           else
+                            else
                             {
                                 return RedirectToAction("DirectDashBoard", "Associate");
                             }
                         }
-                        else if (ds.Tables[0].Rows[0]["UserType"].ToString() == "Customer")
+                        else if (userType.Equals("Customer", StringComparison.OrdinalIgnoreCase))
                         {
-                            Session["Pk_userId"] = ds.Tables[0].Rows[0]["Pk_userId"].ToString();
-                            Session["FullName"] = ds.Tables[0].Rows[0]["FullName"].ToString();
-                            Session["LoginId"] = ds.Tables[0].Rows[0]["LoginId"].ToString();
+                            Session["Pk_userId"] = ds.Tables[0].Columns.Contains("Pk_userId") ? dr["Pk_userId"].ToString() : "";
+                            Session["FullName"] = ds.Tables[0].Columns.Contains("FullName") ? dr["FullName"].ToString() : "";
+                            Session["LoginId"] = ds.Tables[0].Columns.Contains("LoginId") ? dr["LoginId"].ToString() : "";
                             return RedirectToAction("DashBoard", "Customer");
                         }
                         else
                         {
-                            Session["Pk_adminId"] = ds.Tables[0].Rows[0]["Pk_adminId"].ToString();
-                            Session["FullName"] = ds.Tables[0].Rows[0]["Name"].ToString();
-                            Session["LoginId"] = ds.Tables[0].Rows[0]["LoginId"].ToString();
-                            Session["RoleName"]= ds.Tables[0].Rows[0]["UsertypeName"].ToString();
+                            Session["Pk_adminId"] = ds.Tables[0].Columns.Contains("Pk_adminId") ? dr["Pk_adminId"].ToString() : "";
+                            Session["FullName"] = ds.Tables[0].Columns.Contains("Name") ? dr["Name"].ToString() : "";
+                            Session["LoginId"] = ds.Tables[0].Columns.Contains("LoginId") ? dr["LoginId"].ToString() : "";
+                            Session["RoleName"] = ds.Tables[0].Columns.Contains("UsertypeName") ? dr["UsertypeName"].ToString() : "";
                             return RedirectToAction("DashBoard", "Admin");
                         }
                     }
                     else
                     {
-                        TempData["Login"] = ds.Tables[0].Rows[0]["ErrorMessage"].ToString();
+                        string errMsg = ds.Tables[0].Columns.Contains("ErrorMessage") ? dr["ErrorMessage"].ToString() : "Invalid Login ID or Password";
+                        TempData["Login"] = !string.IsNullOrEmpty(errMsg) ? errMsg : "Invalid Login ID or Password";
                         return RedirectToAction("Login");
                     }
+                }
+                else
+                {
+                    TempData["Login"] = "Invalid Login ID or Password";
+                    return RedirectToAction("Login");
                 }
             }
             catch(Exception ex)
@@ -138,7 +150,7 @@ namespace RealEstateRegalSpace.Controllers
                     Session["AssociateLoginId"] = ds.Tables[0].Rows[0]["LoginId"].ToString();
                     Session["AssociateName"] = ds.Tables[0].Rows[0]["Name"].ToString();
                     Session["Password"] = Crypto.Decrypt(ds.Tables[0].Rows[0]["Password"].ToString());
-                    string msg = "Dear " + Session["AssociateName"].ToString() + " Welcome to GURDENGUNJ INFRATECH.Your Login Id " + Session["AssociateLoginId"].ToString() + " and Password is " + Session["Password"].ToString() + ". Kindly login www.Gurdengunj.com Thankyou";
+                    string msg = "Dear " + Session["AssociateName"].ToString() + " Welcome to GARDENESTATE VENTURES.Your Login Id " + Session["AssociateLoginId"].ToString() + " and Password is " + Session["Password"].ToString() + ". Kindly login www.gardenestateventures.com Thankyou";
                     BLSMS.SendSMSNew(obj.mobileNo, msg);
                     return RedirectToAction("ConfirmationPage");
                 }
@@ -224,11 +236,12 @@ namespace RealEstateRegalSpace.Controllers
 
         public ActionResult PlotAvailbility()
         {
+            Master model = new Master();
+
             #region ddlSites
-            Master obj = new Master();
             int count = 0;
             List<SelectListItem> ddlSite = new List<SelectListItem>();
-            DataSet ds1 = obj.GetSiteList();
+            DataSet ds1 = model.GetSiteList();
             if (ds1 != null && ds1.Tables.Count > 0 && ds1.Tables[0].Rows.Count > 0)
             {
                 foreach (DataRow r in ds1.Tables[0].Rows)
@@ -253,14 +266,57 @@ namespace RealEstateRegalSpace.Controllers
             List<SelectListItem> ddlBlock = new List<SelectListItem>();
             ddlBlock.Add(new SelectListItem { Text = "Select Block", Value = "0" });
             ViewBag.ddlBlock = ddlBlock;
-            return View();
+
+            // Fetch Plot Stats for initial load (All Sites)
+            Reports report = new Reports();
+            DataSet dsStats = report.GetPlotCount();
+            if (dsStats != null && dsStats.Tables.Count > 0)
+            {
+                ViewBag.PlotStats = dsStats.Tables[0];
+                ViewBag.SiteStats = dsStats.Tables[0];
+            }
+
+            // Default to Ganga Enclave (SiteID = 17) on initial GET load for ultra-fast <0.1s page load
+            model.SiteID = "17";
+            DataSet ds = model.GetPlotList();
+            if (ds != null && ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
+            {
+                List<Master> lst = new List<Master>();
+                foreach (DataRow r in ds.Tables[0].Rows)
+                {
+                    Master obj = new Master();
+                    obj.PlotID = r["PK_PlotID"].ToString();
+                    obj.SiteID = r["PK_SiteID"].ToString();
+                    obj.SectorID = r["PK_SectorID"].ToString();
+                    obj.BlockID = r["PK_BlockID"].ToString();
+                    obj.EncryptKey = r["PK_PlotID"].ToString();
+                    obj.SiteName = r["SiteName"].ToString();
+                    obj.SectorName = r["SectorName"].ToString();
+                    obj.BlockName = r["BlockName"].ToString();
+                    obj.PlotNumber = r["PlotNumber"].ToString();
+                    obj.PlotArea = r["TotalArea"].ToString();
+                    obj.PlotSize = r.Table.Columns.Contains("PlotSize") ? r["PlotSize"].ToString() : "";
+                    obj.PlotRate = r["PlotRate"].ToString();
+                    obj.PlotAmount = r["PlotAmount"].ToString();
+                    obj.PLCCharge = r["PLCCharge"].ToString();
+                    obj.BookingPercent = r["BookingPercent"].ToString();
+                    obj.PLCNames = r["plcnames"].ToString();
+                    obj.AllottmentPercent = (r["AllottmentPercent"].ToString());
+                    obj.PlotStatus = (r["PlotStatus"].ToString());
+                    obj.ColorCSS = (r["StatusColor"].ToString());
+                    lst.Add(obj);
+                }
+                model.lstPlot = lst;
+            }
+
+            return View(model);
         }
         public ActionResult GetBlockList(string SiteID, string SectorID)
         {
             List<SelectListItem> lstBlock = new List<SelectListItem>();
             Master model = new Master();
-            model.SiteID = SiteID;
-            model.SectorID = SectorID;
+            model.SiteID = SiteID == "0" ? null : SiteID;
+            model.SectorID = SectorID == "0" ? null : SectorID;
             DataSet dsblock = model.GetBlockList();
 
             #region ddlBlock
@@ -345,12 +401,16 @@ namespace RealEstateRegalSpace.Controllers
                 {
                     Master obj = new Master();
                     obj.PlotID = r["PK_PlotID"].ToString();
-                    obj.EncryptKey = Crypto.Encrypt(r["PK_PlotID"].ToString());
+                    obj.SiteID = r["PK_SiteID"].ToString();
+                    obj.SectorID = r["PK_SectorID"].ToString();
+                    obj.BlockID = r["PK_BlockID"].ToString();
+                    obj.EncryptKey = r["PK_PlotID"].ToString();
                     obj.SiteName = r["SiteName"].ToString();
                     obj.SectorName = r["SectorName"].ToString();
                     obj.BlockName = r["BlockName"].ToString();
                     obj.PlotNumber = r["PlotNumber"].ToString();
                     obj.PlotArea = r["TotalArea"].ToString();
+                    obj.PlotSize = r.Table.Columns.Contains("PlotSize") ? r["PlotSize"].ToString() : "";
                     obj.PlotRate = r["PlotRate"].ToString();
                     obj.PlotAmount = r["PlotAmount"].ToString();
                     obj.PLCCharge = r["PLCCharge"].ToString();
@@ -363,6 +423,27 @@ namespace RealEstateRegalSpace.Controllers
                 }
                 model.lstPlot = lst;
             }
+
+            // Fetch Plot Stats for filters
+            Reports report = new Reports();
+            report.SiteID = model.SiteID;
+            report.SectorID = model.SectorID;
+            report.BlockID = model.BlockID;
+            DataSet dsStats = report.GetPlotCount();
+            if (dsStats != null && dsStats.Tables.Count > 0)
+            {
+                ViewBag.PlotStats = dsStats.Tables[0];
+            }
+
+            // Fetch Total Plots for the entire Site (Global Total)
+            Reports reportSite = new Reports();
+            reportSite.SiteID = model.SiteID;
+            DataSet dsSiteStats = reportSite.GetPlotCount();
+            if (dsSiteStats != null && dsSiteStats.Tables.Count > 0)
+            {
+                ViewBag.SiteStats = dsSiteStats.Tables[0];
+            }
+
             #region ddlSite
             int count1 = 0;
             Master objmaster = new Master();
@@ -410,8 +491,8 @@ namespace RealEstateRegalSpace.Controllers
             List<SelectListItem> lstBlock = new List<SelectListItem>();
 
             int blockcount = 0;
-            //objmodel.SiteID = ds.Tables[0].Rows[0]["PK_SiteID"].ToString();
-            //objmodel.SectorID = ds.Tables[0].Rows[0]["PK_SectorID"].ToString();
+            objmaster.SiteID = model.SiteID == "0" ? null : model.SiteID;
+            objmaster.SectorID = model.SectorID == "0" ? null : model.SectorID;
             DataSet dsblock = objmaster.GetBlockList();
 
 
@@ -484,7 +565,7 @@ namespace RealEstateRegalSpace.Controllers
             {
                 if (ds.Tables[0].Rows[0]["Msg"].ToString() == "1")
                 {
-                   string msg = "Dear " + ds.Tables[0].Rows[0]["Name"].ToString() + " Your Password is " +Crypto.Decrypt(ds.Tables[0].Rows[0]["Password"].ToString()) + " Kindly login www.Gurdengunj.com Thankyou";
+                   string msg = "Dear " + ds.Tables[0].Rows[0]["Name"].ToString() + " Your Password is " +Crypto.Decrypt(ds.Tables[0].Rows[0]["Password"].ToString()) + " Kindly login www.gardenestateventures.com Thankyou";
                     BLSMS.SendSMSNew(ds.Tables[0].Rows[0]["Mobile"].ToString(), msg);
                     obj.Result = "1";
 
@@ -505,5 +586,108 @@ namespace RealEstateRegalSpace.Controllers
             return View(home);
         }
 
+        [HttpGet]
+        public JsonResult GetAssociateName(string loginId)
+        {
+            try
+            {
+                SqlParameter[] para = { new SqlParameter("@LoginId", loginId ?? "") };
+                string query = "SELECT RTRIM(LTRIM(ISNULL(FirstName, '') + ' ' + ISNULL(LastName, ''))) AS Name FROM tblUserLogin WHERE LoginId = @LoginId";
+                DataSet ds = Connection.ExecuteQueryText(query, para);
+                if (ds != null && ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0 && !string.IsNullOrEmpty(ds.Tables[0].Rows[0]["Name"].ToString()))
+                {
+                    return Json(new { Result = "1", Name = ds.Tables[0].Rows[0]["Name"].ToString() }, JsonRequestBehavior.AllowGet);
+                }
+                return Json(new { Result = "0", Message = "Associate ID not found" }, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
+                return Json(new { Result = "0", Message = ex.Message }, JsonRequestBehavior.AllowGet);
+            }
+        }
+
+        [HttpPost]
+        public JsonResult SavePlotHoldAjax(string PlotID, string SiteID, string SectorID, string BlockID, string PlotNumber, string AssociateID, string AssociateName, string CustomerName, string CustomerMobile, string Remark)
+        {
+            try
+            {
+                SqlParameter[] para = {
+                    new SqlParameter("@Fk_PlotId", PlotID ?? "0"),
+                    new SqlParameter("@FK_SiteID", SiteID ?? "0"),
+                    new SqlParameter("@FK_SectorID", SectorID ?? "0"),
+                    new SqlParameter("@FK_BlockID", BlockID ?? "0"),
+                    new SqlParameter("@PlotNumber", PlotNumber ?? ""),
+                    new SqlParameter("@AssociateID", AssociateID ?? ""),
+                    new SqlParameter("@AssociateName", AssociateName ?? ""),
+                    new SqlParameter("@CustomerName", CustomerName ?? ""),
+                    new SqlParameter("@CustomerMobile", CustomerMobile ?? ""),
+                    new SqlParameter("@Amount", 0),
+                    new SqlParameter("@Remark", Remark ?? ""),
+                    new SqlParameter("@AddedBy", Session["Pk_AdminId"] != null ? Session["Pk_AdminId"].ToString() : "1")
+                };
+
+                DataSet ds = Connection.ExecuteQuery("PlotHold", para);
+                if (ds != null && ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
+                {
+                    if (ds.Tables[0].Rows[0]["Msg"].ToString() == "1")
+                    {
+                        return Json(new { Result = "1", Message = "Hold Request for Plot " + PlotNumber + " submitted successfully! Sent to Admin for approval." });
+                    }
+                    else
+                    {
+                        string err = ds.Tables[0].Columns.Contains("ErrorMessage") ? ds.Tables[0].Rows[0]["ErrorMessage"].ToString() : "Could not process hold request.";
+                        return Json(new { Result = "0", Message = err });
+                    }
+                }
+                return Json(new { Result = "0", Message = "Failed to process hold request." });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { Result = "0", Message = ex.Message });
+            }
+        }
+
+        [HttpPost]
+        public JsonResult SavePlotEnquiryAjax(string PlotNumber, string SiteName, string SectorName, string BlockName, string Name, string Mobile, string Message)
+        {
+            try
+            {
+                SqlParameter[] checkPara = {
+                    new SqlParameter("@PlotNumber", PlotNumber ?? ""),
+                    new SqlParameter("@Mobile", Mobile ?? "")
+                };
+                string checkQuery = "SELECT COUNT(1) FROM tblPlotEnquiry WHERE PlotNumber = @PlotNumber AND Mobile = @Mobile AND EnquiryDate > DATEADD(minute, -2, GETDATE())";
+                DataSet dsCheck = Connection.ExecuteQueryText(checkQuery, checkPara);
+                if (dsCheck != null && dsCheck.Tables.Count > 0 && dsCheck.Tables[0].Rows.Count > 0 && Convert.ToInt32(dsCheck.Tables[0].Rows[0][0]) > 0)
+                {
+                    // Duplicate rapid click request within 2 minutes: return success response without re-inserting
+                    string dupMsg = "Thank you " + Name + "! Your enquiry for Plot " + PlotNumber + " (" + SiteName + ") has been received. Our team will contact you at " + Mobile + " shortly.";
+                    return Json(new { Result = "1", Message = dupMsg });
+                }
+
+                SqlParameter[] para = {
+                    new SqlParameter("@PlotNumber", PlotNumber ?? ""),
+                    new SqlParameter("@SiteName", SiteName ?? ""),
+                    new SqlParameter("@SectorName", SectorName ?? ""),
+                    new SqlParameter("@BlockName", BlockName ?? ""),
+                    new SqlParameter("@Name", Name ?? ""),
+                    new SqlParameter("@Mobile", Mobile ?? ""),
+                    new SqlParameter("@Message", Message ?? "")
+                };
+
+                string query = "INSERT INTO tblPlotEnquiry (PlotNumber, SiteName, SectorName, BlockName, Name, Mobile, Message, EnquiryDate, Status) VALUES (@PlotNumber, @SiteName, @SectorName, @BlockName, @Name, @Mobile, @Message, GETDATE(), 'New')";
+                Connection.ExecuteNonQueryText(query, para);
+
+                string responseMsg = "Thank you " + Name + "! Your enquiry for Plot " + PlotNumber + " (" + SiteName + ") has been received. Our team will contact you at " + Mobile + " shortly.";
+                return Json(new { Result = "1", Message = responseMsg });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { Result = "0", Message = ex.Message });
+            }
+        }
+
     }
 }
+
+

@@ -15,9 +15,17 @@ namespace RealEstateRegalSpace.Controllers
         public ActionResult DashBoard()
         {
             Dashboard obj = new Dashboard();
-            obj.Fk_UserId = Session["Pk_UserId"].ToString();
+            string userId = (Session["Pk_userId"] ?? Session["Pk_UserId"])?.ToString();
+            if (string.IsNullOrEmpty(userId))
+            {
+                return RedirectToAction("Login", "Home");
+            }
+            obj.Fk_UserId = userId;
             DataSet ds = obj.GetCustomerDashBoard();
-            obj.bageDetails = ds.Tables[0];
+            if (ds != null && ds.Tables.Count > 0)
+            {
+                obj.bageDetails = ds.Tables[0];
+            }
             return View(obj);
         }
         public ActionResult ChangePassword()
@@ -445,6 +453,134 @@ namespace RealEstateRegalSpace.Controllers
             return View(model);
         }
 
+        public ActionResult BookingList()
+        {
+            Plot model = new Plot();
+            string userId = (Session["Pk_userId"] ?? Session["Pk_UserId"])?.ToString();
+            if (string.IsNullOrEmpty(userId))
+            {
+                return RedirectToAction("Login", "Home");
+            }
+
+            #region ddlSite
+            int count1 = 0;
+            List<SelectListItem> ddlSite = new List<SelectListItem>();
+            DataSet dsSite = model.GetSiteList();
+            if (dsSite != null && dsSite.Tables.Count > 0 && dsSite.Tables[0].Rows.Count > 0)
+            {
+                foreach (DataRow r in dsSite.Tables[0].Rows)
+                {
+                    if (count1 == 0)
+                    {
+                        ddlSite.Add(new SelectListItem { Text = "Select Site", Value = "0" });
+                    }
+                    ddlSite.Add(new SelectListItem { Text = r["SiteName"].ToString(), Value = r["PK_SiteID"].ToString() });
+                    count1 = count1 + 1;
+                }
+            }
+            ViewBag.ddlSite = ddlSite;
+            #endregion
+
+            List<SelectListItem> ddlSector = new List<SelectListItem>();
+            ddlSector.Add(new SelectListItem { Text = "Select Sector", Value = "0" });
+            ViewBag.ddlSector = ddlSector;
+
+            List<SelectListItem> ddlBlock = new List<SelectListItem>();
+            ddlBlock.Add(new SelectListItem { Text = "Select Block", Value = "0" });
+            ViewBag.ddlBlock = ddlBlock;
+
+            // Load customer's bookings
+            model.CustomerLoginID = Session["LoginId"]?.ToString();
+            DataSet ds = model.GetBookingDetailsList();
+            if (ds != null && ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
+            {
+                List<Plot> lst = new List<Plot>();
+                foreach (DataRow r in ds.Tables[0].Rows)
+                {
+                    Plot obj = new Plot();
+                    obj.PK_BookingId = r.Table.Columns.Contains("PK_BookingId") ? r["PK_BookingId"].ToString() : "";
+                    obj.CustomerID = r.Table.Columns.Contains("CustomerID") ? r["CustomerID"].ToString() : "";
+                    obj.CustomerLoginID = r.Table.Columns.Contains("CustomerLoginID") ? r["CustomerLoginID"].ToString() : "";
+                    obj.CustomerName = r.Table.Columns.Contains("CustomerName") ? r["CustomerName"].ToString() : "";
+                    obj.AssociateID = r.Table.Columns.Contains("AssociateID") ? r["AssociateID"].ToString() : "";
+                    obj.AssociateLoginID = r.Table.Columns.Contains("AssociateLoginID") ? r["AssociateLoginID"].ToString() : "";
+                    obj.AssociateName = r.Table.Columns.Contains("AssociateName") ? r["AssociateName"].ToString() : "";
+                    obj.SiteName = r.Table.Columns.Contains("SiteName") ? r["SiteName"].ToString() : "";
+                    obj.PlotNumber = r.Table.Columns.Contains("PlotInfo") ? r["PlotInfo"].ToString() : (r.Table.Columns.Contains("PlotNumber") ? r["PlotNumber"].ToString() : "");
+                    obj.BookingDate = r.Table.Columns.Contains("BookingDate") ? r["BookingDate"].ToString() : "";
+                    obj.BookingAmount = r.Table.Columns.Contains("BookingAmt") ? r["BookingAmt"].ToString() : (r.Table.Columns.Contains("BookingAmount") ? r["BookingAmount"].ToString() : "");
+                    obj.BookingNumber = r.Table.Columns.Contains("BookingNo") ? r["BookingNo"].ToString() : "";
+                    lst.Add(obj);
+                }
+                model.lstPlot = lst;
+            }
+
+            return View(model);
+        }
+
+        [HttpPost]
+        public ActionResult BookingList(Plot model)
+        {
+            List<Plot> lst = new List<Plot>();
+            model.SiteID = model.SiteID == "0" ? null : model.SiteID;
+            model.SectorID = model.SectorID == "0" ? null : model.SectorID;
+            model.BlockID = model.BlockID == "0" ? null : model.BlockID;
+            model.FromDate = string.IsNullOrEmpty(model.FromDate) ? null : Common.ConvertToSystemDate(model.FromDate, "dd/MM/yyyy");
+            model.ToDate = string.IsNullOrEmpty(model.ToDate) ? null : Common.ConvertToSystemDate(model.ToDate, "dd/MM/yyyy");
+            model.CustomerLoginID = Session["LoginId"]?.ToString();
+            DataSet ds = model.GetBookingDetailsList();
+
+            if (ds != null && ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
+            {
+                foreach (DataRow r in ds.Tables[0].Rows)
+                {
+                    Plot obj = new Plot();
+                    obj.PK_BookingId = r.Table.Columns.Contains("PK_BookingId") ? r["PK_BookingId"].ToString() : "";
+                    obj.CustomerID = r.Table.Columns.Contains("CustomerID") ? r["CustomerID"].ToString() : "";
+                    obj.CustomerLoginID = r.Table.Columns.Contains("CustomerLoginID") ? r["CustomerLoginID"].ToString() : "";
+                    obj.CustomerName = r.Table.Columns.Contains("CustomerName") ? r["CustomerName"].ToString() : "";
+                    obj.AssociateID = r.Table.Columns.Contains("AssociateID") ? r["AssociateID"].ToString() : "";
+                    obj.AssociateLoginID = r.Table.Columns.Contains("AssociateLoginID") ? r["AssociateLoginID"].ToString() : "";
+                    obj.AssociateName = r.Table.Columns.Contains("AssociateName") ? r["AssociateName"].ToString() : "";
+                    obj.SiteName = r.Table.Columns.Contains("SiteName") ? r["SiteName"].ToString() : "";
+                    obj.PlotNumber = r.Table.Columns.Contains("PlotInfo") ? r["PlotInfo"].ToString() : (r.Table.Columns.Contains("PlotNumber") ? r["PlotNumber"].ToString() : "");
+                    obj.BookingDate = r.Table.Columns.Contains("BookingDate") ? r["BookingDate"].ToString() : "";
+                    obj.BookingAmount = r.Table.Columns.Contains("BookingAmt") ? r["BookingAmt"].ToString() : (r.Table.Columns.Contains("BookingAmount") ? r["BookingAmount"].ToString() : "");
+                    obj.BookingNumber = r.Table.Columns.Contains("BookingNo") ? r["BookingNo"].ToString() : "";
+                    lst.Add(obj);
+                }
+                model.lstPlot = lst;
+            }
+
+            #region ddlSite
+            int count1 = 0;
+            List<SelectListItem> ddlSite = new List<SelectListItem>();
+            DataSet dsSite = model.GetSiteList();
+            if (dsSite != null && dsSite.Tables.Count > 0 && dsSite.Tables[0].Rows.Count > 0)
+            {
+                foreach (DataRow r in dsSite.Tables[0].Rows)
+                {
+                    if (count1 == 0)
+                    {
+                        ddlSite.Add(new SelectListItem { Text = "Select Site", Value = "0" });
+                    }
+                    ddlSite.Add(new SelectListItem { Text = r["SiteName"].ToString(), Value = r["PK_SiteID"].ToString() });
+                    count1 = count1 + 1;
+                }
+            }
+            ViewBag.ddlSite = ddlSite;
+            #endregion
+
+            List<SelectListItem> ddlSector = new List<SelectListItem>();
+            ddlSector.Add(new SelectListItem { Text = "Select Sector", Value = "0" });
+            ViewBag.ddlSector = ddlSector;
+
+            List<SelectListItem> ddlBlock = new List<SelectListItem>();
+            ddlBlock.Add(new SelectListItem { Text = "Select Block", Value = "0" });
+            ViewBag.ddlBlock = ddlBlock;
+
+            return View(model);
+        }
     }
 }
 

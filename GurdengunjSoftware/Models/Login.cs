@@ -39,7 +39,7 @@ namespace RealEstateRegalSpace.Models
                 dr["Msg"] = "1";
                 dr["UserType"] = "Admin";
                 dr["Pk_adminId"] = "1";
-                dr["Name"] = "Gurdengunj Admin";
+                dr["Name"] = "Gardenestate Ventures Admin";
                 dr["LoginId"] = "admin";
                 dr["UsertypeName"] = "Admin";
                 dt.Rows.Add(dr);
@@ -114,3 +114,4 @@ namespace RealEstateRegalSpace.Models
         }
     }
 }
+

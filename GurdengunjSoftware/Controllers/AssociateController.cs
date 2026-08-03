@@ -16,11 +16,19 @@ namespace RealEstateRegalSpace.Controllers
         public ActionResult DashBoard()
         {
             Dashboard obj = new Dashboard();
-            obj.Fk_UserId = Session["Pk_UserId"].ToString();
+            string userId = (Session["Pk_userId"] ?? Session["Pk_UserId"])?.ToString();
+            if (string.IsNullOrEmpty(userId))
+            {
+                return RedirectToAction("Login", "Home");
+            }
+            obj.Fk_UserId = userId;
             DataSet ds = obj.GetAssociateDashboard();
             if (ds != null)
             {
-                obj.associateDetails = ds.Tables[0];
+                if (ds.Tables.Count > 0)
+                {
+                    obj.associateDetails = ds.Tables[0];
+                }
                 if (ds.Tables.Count > 1)
                 {
                     obj.investmentDetails = ds.Tables[1];
@@ -29,7 +37,7 @@ namespace RealEstateRegalSpace.Controllers
                 {
                     obj.kycDetails = ds.Tables[2];
                 }
-                if (ds.Tables.Count > 3)
+                if (ds.Tables.Count > 3 && ds.Tables[3].Rows.Count > 0)
                 {
                     if (string.IsNullOrEmpty(ds.Tables[3].Rows[0]["FathersName"].ToString()) || string.IsNullOrEmpty(ds.Tables[3].Rows[0]["GaurdianRelation"].ToString()) || string.IsNullOrEmpty(ds.Tables[3].Rows[0]["Address"].ToString()))
                     {
@@ -40,31 +48,28 @@ namespace RealEstateRegalSpace.Controllers
                         ViewBag.NoteStyle = "display:none";
                     }
                 }
-
-                //ViewBag.PaidBusinessLeft = ds.Tables[2].Rows[0]["PaidBusinessLeft"].ToString();
-                //ViewBag.PaidBusinessRight = ds.Tables[2].Rows[0]["PaidBusinessRight"].ToString();
-                //ViewBag.TotalBusinessLeft = ds.Tables[2].Rows[0]["TotalBusinessLeft"].ToString();
-                //ViewBag.TotalBusinessRight = ds.Tables[2].Rows[0]["TotalBusinessRight"].ToString();
-                //ViewBag.CarryLeft = ds.Tables[2].Rows[0]["CarryLeft"].ToString();
-                //ViewBag.CarryRight = ds.Tables[2].Rows[0]["CarryRight"].ToString();
             }
             return View(obj);
         }
         public ActionResult DirectDashBoard()
         {
             Dashboard obj = new Dashboard();
-            obj.Fk_UserId = Session["Pk_UserId"].ToString();
+            string userId = (Session["Pk_userId"] ?? Session["Pk_UserId"])?.ToString();
+            if (string.IsNullOrEmpty(userId))
+            {
+                return RedirectToAction("Login", "Home");
+            }
+            obj.Fk_UserId = userId;
             DataSet ds = obj.GetDirectAssociateDashboard();
-            if (ds != null)
+            if (ds != null && ds.Tables.Count > 0)
             {
                 obj.associateDetails = ds.Tables[0];
-
             }
             return View(obj);
         }
         public ActionResult Tree()
         {
-            ViewBag.Fk_UserId = Session["Pk_UserId"].ToString();
+            ViewBag.Fk_UserId = (Session["Pk_userId"] ?? Session["Pk_UserId"])?.ToString();
             return View();
         }
         public ActionResult GetUserList()
@@ -162,17 +167,21 @@ namespace RealEstateRegalSpace.Controllers
         public ActionResult UpdateProfile()
         {
             UpdateProfile obj = new UpdateProfile();
-            obj.LoginId = Session["LoginId"].ToString();
+            obj.LoginId = Session["LoginId"] != null ? Session["LoginId"].ToString() : "";
             DataSet ds = obj.GetProfile();
-            obj.FirstName = ds.Tables[0].Rows[0]["FirstName"].ToString();
-            obj.LastName = ds.Tables[0].Rows[0]["LastName"].ToString();
-            obj.Mobile = ds.Tables[0].Rows[0]["Mobile"].ToString();
-            obj.Email = ds.Tables[0].Rows[0]["Email"].ToString();
-            obj.AccountNo = ds.Tables[0].Rows[0]["AccountNo"].ToString();
-            obj.BankName = ds.Tables[0].Rows[0]["BankName"].ToString();
-            obj.BankBranch = ds.Tables[0].Rows[0]["BankBranch"].ToString();
-            obj.IFSC = ds.Tables[0].Rows[0]["IFSC"].ToString();
-            obj.ProfilePic = ds.Tables[0].Rows[0]["ProfilePic"].ToString();
+            if (ds != null && ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
+            {
+                DataRow dr = ds.Tables[0].Rows[0];
+                obj.FirstName = ds.Tables[0].Columns.Contains("FirstName") ? dr["FirstName"].ToString() : "";
+                obj.LastName = ds.Tables[0].Columns.Contains("LastName") ? dr["LastName"].ToString() : "";
+                obj.Mobile = ds.Tables[0].Columns.Contains("Mobile") ? dr["Mobile"].ToString() : "";
+                obj.Email = ds.Tables[0].Columns.Contains("Email") ? dr["Email"].ToString() : "";
+                obj.AccountNo = ds.Tables[0].Columns.Contains("AccountNo") ? dr["AccountNo"].ToString() : "";
+                obj.BankName = ds.Tables[0].Columns.Contains("BankName") ? dr["BankName"].ToString() : "";
+                obj.BankBranch = ds.Tables[0].Columns.Contains("BankBranch") ? dr["BankBranch"].ToString() : "";
+                obj.IFSC = ds.Tables[0].Columns.Contains("IFSC") ? dr["IFSC"].ToString() : "";
+                obj.ProfilePic = ds.Tables[0].Columns.Contains("ProfilePic") ? dr["ProfilePic"].ToString() : "";
+            }
 
             return View(obj);
         }
@@ -280,7 +289,7 @@ namespace RealEstateRegalSpace.Controllers
                     Session["AssociateLoginId"] = ds.Tables[0].Rows[0]["LoginId"].ToString();
                     Session["AssociateName"] = ds.Tables[0].Rows[0]["Name"].ToString();
                     Session["Password"] = Crypto.Decrypt(ds.Tables[0].Rows[0]["Password"].ToString());
-                    string msg = "Dear " + Session["AssociateName"].ToString() + " Welcome to GURDENGUNJ INFRATECH.Your Login Id " + Session["AssociateLoginId"].ToString() + " and Password is " + Session["Password"].ToString() + ". Kindly login www.Gurdengunj.com Thankyou";
+                    string msg = "Dear " + Session["AssociateName"].ToString() + " Welcome to GARDENESTATE VENTURES.Your Login Id " + Session["AssociateLoginId"].ToString() + " and Password is " + Session["Password"].ToString() + ". Kindly login www.gardenestateventures.com Thankyou";
                     BLSMS.SendSMSNew(obj.mobileNo, msg);
                     return RedirectToAction("ConfirmationPage");
                 }
@@ -299,9 +308,9 @@ namespace RealEstateRegalSpace.Controllers
         public ActionResult PayoutRequest()
         {
             Wallet model = new Wallet();
-            model.Fk_UserId = Session["Pk_userId"].ToString();
+            model.Fk_UserId = Session["Pk_userId"] != null ? Session["Pk_userId"].ToString() : "";
             DataSet Ds = model.GetPayoutBalance();
-            ViewBag.Balance = Ds.Tables[0].Rows[0]["Balance"].ToString();
+            ViewBag.Balance = (Ds != null && Ds.Tables.Count > 0 && Ds.Tables[0].Rows.Count > 0) ? Ds.Tables[0].Rows[0]["Balance"].ToString() : "0";
 
             return View(model);
         }
@@ -313,10 +322,10 @@ namespace RealEstateRegalSpace.Controllers
             try
             {
 
-                obj.AddedBy = Session["Pk_userId"].ToString();
-                obj.LoginId = Session["LoginId"].ToString();
+                obj.AddedBy = Session["Pk_userId"] != null ? Session["Pk_userId"].ToString() : "";
+                obj.LoginId = Session["LoginId"] != null ? Session["LoginId"].ToString() : "";
                 DataSet ds = obj.SavePayoutRequest();
-                if (ds != null && ds.Tables.Count > 0)
+                if (ds != null && ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
                 {
                     if (ds.Tables[0].Rows[0]["Msg"].ToString() == "1")
                     {
@@ -326,7 +335,7 @@ namespace RealEstateRegalSpace.Controllers
                     }
                     else
                     {
-                        TempData["PayoutReq"] = ds.Tables[0].Rows[0]["ErrorMessage"].ToString();
+                        TempData["PayoutReq"] = ds.Tables[0].Columns.Contains("ErrorMessage") ? ds.Tables[0].Rows[0]["ErrorMessage"].ToString() : "Request failed.";
                     }
                 }
             }
@@ -343,12 +352,22 @@ namespace RealEstateRegalSpace.Controllers
         public ActionResult PayoutLedger()
         {
             Reports obj = new Reports();
-            obj.LoginId = Session["LoginId"].ToString();
+            obj.LoginId = Session["LoginId"] != null ? Session["LoginId"].ToString() : "";
             DataSet ds = obj.GetAssociateLedger();
 
-            obj.lstDetails = ds.Tables[0];
-            obj.customerLedger = ds.Tables[1];
-            ViewBag.AdvancePayment = ds.Tables[2].Rows[0]["Advance"].ToString();
+            if (ds != null)
+            {
+                if (ds.Tables.Count > 0) obj.lstDetails = ds.Tables[0];
+                if (ds.Tables.Count > 1) obj.customerLedger = ds.Tables[1];
+                if (ds.Tables.Count > 2 && ds.Tables[2].Rows.Count > 0)
+                {
+                    ViewBag.AdvancePayment = ds.Tables[2].Rows[0]["Advance"].ToString();
+                }
+                else
+                {
+                    ViewBag.AdvancePayment = "0";
+                }
+            }
             return View(obj);
         }
 
@@ -461,43 +480,42 @@ namespace RealEstateRegalSpace.Controllers
 
         public ActionResult AssociateUplineDetail(Reports model)
         {
-
-            model.LoginId = Session["LoginId"].ToString();
-
+            model.LoginId = Session["LoginId"] != null ? Session["LoginId"].ToString() : "";
             List<Reports> lst = new List<Reports>();
 
             DataSet ds = model.GetUplineDetails();
-            model.lstDetails = ds.Tables[0];
+            if (ds != null && ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
+            {
+                model.lstDetails = ds.Tables[0];
+            }
 
             return View(model);
         }
         public ActionResult AssociateDownlineDetail(Reports model)
         {
-
-            model.LoginId = Session["LoginId"].ToString();
-
+            model.LoginId = Session["LoginId"] != null ? Session["LoginId"].ToString() : "";
             List<Reports> lst = new List<Reports>();
 
             DataSet ds = model.GetDownlineDetails();
-            model.lstDetails = ds.Tables[0];
+            if (ds != null && ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
+            {
+                model.lstDetails = ds.Tables[0];
+            }
 
             return View(model);
         }
         public ActionResult PayoutReport()
         {
-
             Reports payoutDetail = new Reports();
-            payoutDetail.LoginId = Session["LoginID"].ToString();
-            DataSet ds11 = payoutDetail.GetPayoutReport();
-            if (ds11 != null && ds11.Tables.Count > 0)
+            if (Session["LoginID"] != null)
             {
-                if (ds11.Tables[0].Rows.Count > 0)
+                payoutDetail.LoginId = Session["LoginID"].ToString();
+                DataSet ds11 = payoutDetail.GetPayoutReport();
+                if (ds11 != null && ds11.Tables.Count > 0 && ds11.Tables[0].Rows.Count > 0)
                 {
-
                     if (ds11.Tables[0].Rows[0][0].ToString() == "1")
                     {
-
-                        if (Session["CommissionType"].ToString() == "Direct")
+                        if (Session["CommissionType"] != null && Session["CommissionType"].ToString().Equals("Direct", StringComparison.OrdinalIgnoreCase))
                         {
                             ds11 = payoutDetail.GetDircetPayout();
                         }
@@ -505,36 +523,38 @@ namespace RealEstateRegalSpace.Controllers
                         {
                             ds11 = payoutDetail.GetPayoutReport();
                         }
-                        payoutDetail.payoutData = ds11.Tables[0];
+                        if (ds11 != null && ds11.Tables.Count > 0 && ds11.Tables[0].Rows.Count > 0)
+                        {
+                            payoutDetail.payoutData = ds11.Tables[0];
+                        }
                         return View(payoutDetail);
                     }
                     else
                     {
-                        TempData["PayoutReport"] = ds11.Tables[0].Rows[0]["ErrorMessage"].ToString();
-
+                        if (ds11.Tables[0].Columns.Contains("ErrorMessage"))
+                        {
+                            TempData["PayoutReport"] = ds11.Tables[0].Rows[0]["ErrorMessage"].ToString();
+                        }
                     }
-
                 }
             }
 
             return View();
-
         }
         [HttpPost]
         public ActionResult PayoutReport(Reports payoutDetail)
         {
-
             payoutDetail.FromDate = string.IsNullOrEmpty(payoutDetail.FromDate) ? null : Common.ConvertToSystemDate(payoutDetail.FromDate, "dd/MM/yyyy");
             payoutDetail.Todate = string.IsNullOrEmpty(payoutDetail.Todate) ? null : Common.ConvertToSystemDate(payoutDetail.Todate, "dd/MM/yyyy");
-            payoutDetail.LoginId = Session["LoginID"].ToString();
+            payoutDetail.LoginId = Session["LoginID"] != null ? Session["LoginID"].ToString() : "";
             DataSet ds11 = payoutDetail.GetPayoutReport();
-            payoutDetail.payoutData = ds11.Tables[0];
-            if (ds11 != null && ds11.Tables.Count > 0)
+            if (ds11 != null && ds11.Tables.Count > 0 && ds11.Tables[0].Rows.Count > 0)
             {
+                payoutDetail.payoutData = ds11.Tables[0];
                 if (ds11.Tables[0].Rows[0][0].ToString() == "1")
                 {
-                    payoutDetail.LoginId = Session["LoginID"].ToString();
-                    if (Session["CommissionType"].ToString() == "Direct")
+                    payoutDetail.LoginId = Session["LoginID"] != null ? Session["LoginID"].ToString() : "";
+                    if (Session["CommissionType"] != null && Session["CommissionType"].ToString().Equals("Direct", StringComparison.OrdinalIgnoreCase))
                     {
                         ds11 = payoutDetail.GetDircetPayout();
                     }
@@ -542,18 +562,22 @@ namespace RealEstateRegalSpace.Controllers
                     {
                         ds11 = payoutDetail.GetPayoutReport();
                     }
-                    payoutDetail.payoutData = ds11.Tables[0];
+                    if (ds11 != null && ds11.Tables.Count > 0 && ds11.Tables[0].Rows.Count > 0)
+                    {
+                        payoutDetail.payoutData = ds11.Tables[0];
+                    }
                     return View(payoutDetail);
                 }
                 else
                 {
-                    TempData["PayoutReport"] = ds11.Tables[0].Rows[0]["ErrorMessage"].ToString();
-
+                    if (ds11.Tables[0].Columns.Contains("ErrorMessage"))
+                    {
+                        TempData["PayoutReport"] = ds11.Tables[0].Rows[0]["ErrorMessage"].ToString();
+                    }
                 }
             }
 
-            return View();
-
+            return View(payoutDetail);
         }
 
         public ActionResult GetPayoutDetails(string LoginId, string Payout)
@@ -582,10 +606,14 @@ namespace RealEstateRegalSpace.Controllers
 
         public ActionResult KYCDocuments()
         {
-            KYCDocuments objKYC = new KYCDocuments();
+            string userId = (Session["Pk_userId"] ?? Session["Pk_UserId"])?.ToString();
+            if (string.IsNullOrEmpty(userId))
+            {
+                return RedirectToAction("Login", "Home");
+            }
 
-            //List<Profile> lstprofile = new List<Profile>();
-            objKYC.PKUserID = Session["Pk_userId"].ToString();
+            KYCDocuments objKYC = new KYCDocuments();
+            objKYC.PKUserID = userId;
             KYCDocuments obj = new KYCDocuments();
             DataSet ds = objKYC.GetKYCDocuments();
             if (ds != null && ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
@@ -714,10 +742,13 @@ namespace RealEstateRegalSpace.Controllers
             #endregion bindmonth
             Reports obj = new Reports();
 
-            obj.LoginId = string.IsNullOrEmpty(loginid) ? Session["LoginId"].ToString() : loginid;
+            obj.LoginId = string.IsNullOrEmpty(loginid) ? (Session["LoginId"] != null ? Session["LoginId"].ToString() : "") : loginid;
             obj.Month = "0";
             DataSet ds11 = obj.GetBusinessReport();
-            obj.lstDetails = ds11.Tables[0];
+            if (ds11 != null && ds11.Tables.Count > 0 && ds11.Tables[0].Rows.Count > 0)
+            {
+                obj.lstDetails = ds11.Tables[0];
+            }
             return View(obj);
         }
         [HttpPost]
@@ -743,9 +774,12 @@ namespace RealEstateRegalSpace.Controllers
 
             #endregion bindmonth
             Session["Month"] = obj.Month;
-            obj.LoginId = Session["LoginId"].ToString();
+            obj.LoginId = Session["LoginId"] != null ? Session["LoginId"].ToString() : "";
             DataSet ds11 = obj.GetBusinessReport();
-            obj.lstDetails = ds11.Tables[0];
+            if (ds11 != null && ds11.Tables.Count > 0 && ds11.Tables[0].Rows.Count > 0)
+            {
+                obj.lstDetails = ds11.Tables[0];
+            }
             return View(obj);
 
         }
@@ -759,7 +793,7 @@ namespace RealEstateRegalSpace.Controllers
             try
             {
 
-                model.sponserId = Session["Loginid"].ToString();
+                model.sponserId = (Session["Loginid"] ?? Session["LoginId"] ?? Session["LoginID"])?.ToString();
 
 
                 TraditionalAssociate obj = new TraditionalAssociate();
@@ -859,13 +893,13 @@ namespace RealEstateRegalSpace.Controllers
                             string mob = model.Contact;
                             try
                             {
-                                string msg = "Dear " + name + " Welcome to GURDENGUNJ INFRATECH.Your Login Id " + id + " and Password is " + pass + ". Kindly login" + SoftwareDetails.Website + " Thankyou";
+                                string msg = "Dear " + name + " Welcome to GARDENESTATE VENTURES.Your Login Id " + id + " and Password is " + pass + ". Kindly login" + SoftwareDetails.Website + " Thankyou";
                                 //BLSMS.SendSMSNew(model.Contact, msg);
                             }
                             catch { }
                             try
                             {
-                                string msg = "Dear " + name + " Welcome to GURDENGUNJ INFRATECH.Your Login Id " + id + " and Password is " + pass + ". Kindly login" + SoftwareDetails.Website + " Thankyou";
+                                string msg = "Dear " + name + " Welcome to GARDENESTATE VENTURES.Your Login Id " + id + " and Password is " + pass + ". Kindly login" + SoftwareDetails.Website + " Thankyou";
                                 //BLSMS.SendSMSNew("0000000000", msg);
                             }
                             catch { }
@@ -960,9 +994,79 @@ namespace RealEstateRegalSpace.Controllers
             DataSet ds = obj.AdvancePaymentReport();
             obj.advancePayment = ds.Tables[0];
             return View(obj);
+        }
 
+        public ActionResult SiteVisitRequest()
+        {
+            Master objM = new Master();
+            DataSet dsSite = objM.GetSiteList();
+            List<SelectListItem> ddlSite = new List<SelectListItem>();
+            ddlSite.Add(new SelectListItem { Text = "Select Site / Project", Value = "" });
+            if (dsSite != null && dsSite.Tables.Count > 0)
+            {
+                foreach (DataRow r in dsSite.Tables[0].Rows)
+                {
+                    ddlSite.Add(new SelectListItem { Text = r["SiteName"].ToString(), Value = r["PK_SiteID"].ToString() });
+                }
+            }
+            ViewBag.ddlSite = ddlSite;
+            return View();
+        }
+
+        [HttpPost]
+        public ActionResult SiteVisitRequest(SiteVisit model)
+        {
+            try
+            {
+                model.FK_AssociateID = (Session["Pk_userId"] ?? Session["Pk_UserId"])?.ToString();
+                model.AssociateCode = Session["LoginId"]?.ToString();
+                model.AssociateName = Session["FullName"]?.ToString();
+
+                if (!string.IsNullOrEmpty(model.SiteID))
+                {
+                    Master objM = new Master();
+                    DataSet dsSite = objM.GetSiteList();
+                    if (dsSite != null && dsSite.Tables.Count > 0)
+                    {
+                        foreach (DataRow r in dsSite.Tables[0].Rows)
+                        {
+                            if (r["PK_SiteID"].ToString() == model.SiteID)
+                            {
+                                model.SiteName = r["SiteName"].ToString();
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                DataSet ds = model.SaveSiteVisit();
+                if (ds != null && ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
+                {
+                    TempData["SiteVisitMsg"] = ds.Tables[0].Rows[0]["Message"].ToString();
+                }
+                else
+                {
+                    TempData["SiteVisitMsg"] = "Site visit request submitted successfully!";
+                }
+                return RedirectToAction("SiteVisitList");
+            }
+            catch (Exception ex)
+            {
+                TempData["SiteVisitError"] = "Error submitting request: " + ex.Message;
+                return RedirectToAction("SiteVisitRequest");
+            }
+        }
+
+        public ActionResult SiteVisitList()
+        {
+            string userId = (Session["Pk_userId"] ?? Session["Pk_UserId"])?.ToString();
+            DataTable dt = SiteVisit.GetSiteVisits(associateUserId: userId);
+            ViewBag.SiteVisitList = dt;
+            return View();
         }
 
     }
 
 }
+
+

@@ -1,66 +1,100 @@
 @model RealEstateRegalSpace.Models.Reports
 
 @{
-    ViewBag.Title = "Direct";
+    ViewBag.Title = "Direct Associates";
     Layout = "~/Views/Shared/Layout.cshtml";
 }
 
+<style>
+    .associate-page-title {
+        font-size: 1.75rem;
+        font-weight: 800;
+        color: #1e293b;
+        margin-bottom: 1.5rem;
+    }
+    .table-card {
+        background: #ffffff;
+        border-radius: 16px;
+        border: none;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+        overflow: hidden;
+    }
+    .table-modern {
+        width: 100%;
+        margin-bottom: 0;
+    }
+    .table-modern thead {
+        background: #f8fafc;
+        border-bottom: 2px solid #e2e8f0;
+    }
+    .table-modern thead th {
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: #475569;
+        padding: 14px 16px;
+        border: none;
+        white-space: nowrap;
+    }
+    .table-modern tbody tr {
+        border-bottom: 1px solid #f1f5f9;
+        transition: background-color 0.15s ease;
+    }
+    .table-modern tbody tr:hover {
+        background-color: #f8fafc;
+    }
+    .table-modern tbody td {
+        padding: 14px 16px;
+        font-size: 0.9rem;
+        color: #334155;
+        vertical-align: middle;
+        white-space: nowrap;
+    }
+</style>
 
+<div class="container-fluid pt-3">
+    <h2 class="associate-page-title">Direct Associates List</h2>
 
-<div class="wrapper">
-    <div class="container-fluid">
-        <div class="card-block">
-            <div class="page-title-box">
-                <div class="row align-items-center">
-                    <div class="col-sm-6">
-                        <h4 class="page-title">Direct</h4>
-                    </div>
-                    
-                </div>
-            </div>
-            <div class="form-group row">
-                <div class="col-lg-12">
-                    <div class="row gutters table-responsive">
-                        <table id="example23" class="table table-bordered">
-                            <thead>
-                                <tr>
-                                    <th>LoginId</th>
-                                    <th>Name</th>
-                                    <th>Joining Date</th>
-                                    <th>Mobile</th>
-                                    <th>Status</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @if (Model != null)
-                                {
-                                    if (Model.directList != null)
-                                    {
-                                        if (Model.directList.Rows.Count > 0)
-                                        {
-                                            for (int i = 0; i <= Model.directList.Rows.Count - 1; i++)
-                                            {
-                                                <tr>
-                                                    <td>@Model.directList.Rows[i]["LoginId"].ToString()</td>
-
-                                                    <td>@Model.directList.Rows[i]["Name"].ToString()</td>
-
-                                                    <td>@Model.directList.Rows[i]["JoiningDate"].ToString()</td>
-                                                    <td>@Model.directList.Rows[i]["Mobile"].ToString()</td>
-                                                    <td>@Model.directList.Rows[i]["Status"].ToString()</td>
-
-                                                </tr>
-                                            }
-
-                                        }
-                                    }
-                                }
-
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
+    <!-- Modern Table Card -->
+    <div class="table-card">
+        <div class="table-responsive">
+            <table id="example23" class="table table-modern">
+                <thead>
+                    <tr>
+                        <th>Login ID</th>
+                        <th>Associate Name</th>
+                        <th>Joining Date</th>
+                        <th>Mobile Number</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.directList != null && Model.directList.Rows.Count > 0)
+                    {
+                        for (int i = 0; i < Model.directList.Rows.Count; i++)
+                        {
+                            string st = Model.directList.Rows[i]["Status"].ToString();
+                            string badgeCls = (st == "Active" || st == "P" || st == "Approved") ? "badge-success" : "badge-danger";
+                            <tr>
+                                <td><span class="badge badge-light border text-dark px-2 py-1">@Model.directList.Rows[i]["LoginId"].ToString()</span></td>
+                                <td class="font-weight-bold text-dark">@Model.directList.Rows[i]["Name"].ToString()</td>
+                                <td>@Model.directList.Rows[i]["JoiningDate"].ToString()</td>
+                                <td><i class="fas fa-phone text-muted mr-1"></i> @Model.directList.Rows[i]["Mobile"].ToString()</td>
+                                <td><span class="badge @badgeCls px-3 py-1">@st</span></td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="5" class="text-center py-4 text-muted font-weight-bold">
+                                <i class="fas fa-info-circle mr-1 text-primary"></i> No direct associate records found.
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
         </div>
     </div>
 </div>

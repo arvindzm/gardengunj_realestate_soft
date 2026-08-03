@@ -25,22 +25,15 @@
 
 </head>
 <body>
-    <div style="border:3px solid #a20e0e;padding-left:10px;padding-right:10px;">
-        <table style="border: 0px none black;">
-            <tr style="border: 0px none black;">
-                <td style="border: 0px none black;">
-                    <img src="/AdminPanelCss/img/logo-dark.png" style="width:100px" />
-                </td>
-                <td style="border: 0px none black;"></td>
-
-                <td style="border: 0px none black;">
-                    <h1 style="color:#a20e0e">GurdengunjInfratech .</h1>
-
+    <div style="border: 2px solid #e87e1a; padding: 25px; border-radius: 10px; background: #fff;">
+        <table style="width: 100%; border-bottom: 2px solid #6eb544; padding-bottom: 15px; margin-bottom: 20px;">
+            <tr>
+                <td style="text-align: center;">
+                    <img src="/files/assets/images/logo.png" style="width: 100px; margin-bottom: 10px;" />
+                    <h1 style="color: #e87e1a; margin: 0; font-size: 32px; text-transform: uppercase;">GARDENESTATE VENTURES</h1>
                 </td>
             </tr>
-
         </table>
-        <br />
 
       
 
@@ -55,6 +48,10 @@
             </tr>
             <tr>
                 <td style="border: 1px solid black;"><b>Site Name :    </b>@ViewBag.SiteName</td>
+                <td style="border: 1px solid black;"><b>Sector :    </b>@ViewBag.SectorName</td>
+            </tr>
+            <tr>
+                <td style="border: 1px solid black;"><b>Block :    </b>@ViewBag.BlockName</td>
                 <td style="border: 1px solid black;"><b> Plot No:    </b>@ViewBag.PlotNumber</td>
             </tr>
             
@@ -156,13 +153,7 @@
             </tr>
         </table>
         <br />
-        <table style="width:100%;background:#a20e0e;color:white;">
-            <tr>
-                <td style="text-align:center">
-                    @RealEstateRegalSpace.Models.Common.SoftwareDetails.CompanyAddress
-                </td>
-            </tr>
-        </table>
+
         <br />
         <br />
 
@@ -175,4 +166,5 @@
    
 </body>
 </html>
+
 

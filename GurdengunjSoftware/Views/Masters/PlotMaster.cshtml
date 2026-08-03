@@ -89,7 +89,7 @@
                     <label class="font-weight-bold">Plot Size <span class="text-danger">*</span></label>
                     @Html.DropDownListFor(m => m.PlotSizeID, new SelectList(ViewBag.ddlPlotSize, "Value", "Text"), new { @class = "form-control", @onchange = "return calculatePlotAmount();" })
                 </div>
-                <div id="plotarea" class="col-sm-3" style="display:none">
+                <div id="plotarea" class="col-sm-3">
                     <label class="font-weight-bold">Plot Area <span class="text-danger">*</span></label>
                     @Html.TextBoxFor(m => m.PlotArea, new { @class = "form-control", @Placeholder = "0.00", @onkeypress = "return isNumberOrDecimal(event);", @onchange = "return calculatePlotAmount();" })
                 </div>
@@ -101,13 +101,13 @@
                     <label class="font-weight-bold">Plot Amount</label>
                     @Html.TextBoxFor(m => m.PlotAmount, new { @class = "form-control", @Readonly = "readonly", @Placeholder = "0.00" })
                 </div>
+            </div>
+
+            <div class="row mt-3">
                 <div class="col-sm-3">
                     <label class="font-weight-bold">Allotment (%) <span class="text-danger">*</span></label>
                     @Html.TextBoxFor(m => m.AllottmentPercent, new { @class = "form-control", @Placeholder = "0.00", @onkeypress = "return isNumberOrDecimal(event);" })
                 </div>
-            </div>
-
-            <div class="row mt-3">
                 <div class="col-sm-3">
                     <label class="font-weight-bold">Prefix</label>
                     @Html.TextBoxFor(m => m.PlotPrefix, new { @class = "form-control", @Placeholder = "e.g. P-" })
@@ -119,10 +119,6 @@
                 <div class="col-sm-3">
                     <label class="font-weight-bold">To Plot <span class="text-danger">*</span></label>
                     @Html.TextBoxFor(m => m.ToPlot, new { @class = "form-control", @Placeholder = "10", @onkeypress = "return isNumberOrDecimal(event);" })
-                </div>
-                <div class="col-sm-3">
-                    <label class="font-weight-bold">Postfix</label>
-                    @Html.TextBoxFor(m => m.PlotPostfix, new { @class = "form-control", @Placeholder = "e.g. -A" })
                 </div>
             </div>
 
@@ -196,14 +192,15 @@
 
     $(document).ready(function () {
 
-        if ($("#rdbregular").prop("checked", true)) {
+        if ($("#rdbregular").prop("checked")) {
             $('#plotsize').css({ 'display': '' });
-            $('#plotarea').css({ 'display': 'none' });
+            $('#PlotArea').attr('readonly', true);
             $('#PlotStatus').val('RegularPlot');
+            calculatePlotAmount();
         }
         else {
             $('#plotsize').css({ 'display': 'none' });
-            $('#plotarea').css({ 'display': '' });
+            $('#PlotArea').attr('readonly', false);
             $('#PlotStatus').val('NonRegularPlot');
         }
 
@@ -214,10 +211,14 @@
             var selectedPlotSize = ddlSize.options[ddlSize.selectedIndex].text;
 
             var plotSize = selectedPlotSize.split(" ");
-            var plotRate = $("#PlotRate").val();
+            var area = Number(plotSize[0]);
+            
+            if (!isNaN(area) && area > 0) {
+                $("#PlotArea").val(area);
+            }
 
-            var plotAmount = Number(plotSize[0]) * Number(plotRate);
-            //alert(plotArea);
+            var plotRate = $("#PlotRate").val();
+            var plotAmount = area * Number(plotRate);
             document.getElementById("PlotAmount").value = plotAmount;
         }
         else {
@@ -228,12 +229,15 @@
     function getdetails(plottype) {
         if (plottype == "RegularPlot") {
             $('#plotsize').css({ 'display': '' });
-            $('#plotarea').css({ 'display': 'none' });
+            $('#PlotArea').attr('readonly', true);
             $('#PlotStatus').val('RegularPlot');
+            calculatePlotAmount();
         }
         else {
             $('#plotsize').css({ 'display': 'none' });
-            $('#plotarea').css({ 'display': '' });
+            $('#PlotArea').attr('readonly', false);
+            $('#PlotArea').val('');
+            $('#PlotAmount').val('');
             $('#PlotStatus').val('NonRegularPlot');
         }
     }

@@ -27,30 +27,30 @@
                 <div class="row">
                     <div class="col-md-3 mb-3">
                         <label class="font-weight-bold text-dark">Site</label>
-                        @Html.DropDownListFor(m => m.SiteID, new SelectList(ViewBag.ddlSite, "Value", "Text"), new { @class = "form-control", @onchange = "return onSiteChange();", @style="height: 45px;" })
+                        @Html.DropDownListFor(m => m.SiteID, (IEnumerable<SelectListItem>)ViewBag.ddlSite, new { @class = "form-control font-weight-bold", @onchange = "return onSiteChange();", @style="height: 45px; border-radius: 10px; border: 1px solid #cbd5e1; color: #1e293b; background-color: #ffffff;" })
                     </div>
                     <div class="col-md-3 mb-3">
                         <label class="font-weight-bold text-dark">Sector</label>
-                        @Html.DropDownListFor(m => m.SectorID, new SelectList(ViewBag.ddlSector, "Value", "Text"), new { @class = "form-control", @onchange = "return onSectorChange();", @style="height: 45px;" })
+                        @Html.DropDownListFor(m => m.SectorID, (IEnumerable<SelectListItem>)ViewBag.ddlSector, new { @class = "form-control font-weight-bold", @onchange = "return onSectorChange();", @style="height: 45px; border-radius: 10px; border: 1px solid #cbd5e1; color: #1e293b; background-color: #ffffff;" })
                     </div>
                     <div class="col-md-3 mb-3">
                         <label class="font-weight-bold text-dark">Block</label>
-                        @Html.DropDownListFor(m => m.BlockID, new SelectList(ViewBag.ddlBlock, "Value", "Text"), new { @class = "form-control", @style="height: 45px;" })
+                        @Html.DropDownListFor(m => m.BlockID, (IEnumerable<SelectListItem>)ViewBag.ddlBlock, new { @class = "form-control font-weight-bold", @style="height: 45px; border-radius: 10px; border: 1px solid #cbd5e1; color: #1e293b; background-color: #ffffff;" })
                     </div>
                     <div class="col-md-3 mb-3">
                         <label class="font-weight-bold text-dark">Plot No</label>
-                        @Html.TextBoxFor(m => m.PlotNumber, new { @class = "form-control", @Placeholder = "Search Plot No", @style="height: 45px;" })
+                        @Html.TextBoxFor(m => m.PlotNumber, new { @class = "form-control font-weight-bold", @Placeholder = "Search Plot No", @style="height: 45px; border-radius: 10px; border: 1px solid #cbd5e1; color: #1e293b; background-color: #ffffff;" })
                         @Html.HiddenFor(m => m.PlotID)
                     </div>
                 </div>
                 <div class="row align-items-end mt-2">
                     <div class="col-md-3 mb-3">
                         <label class="font-weight-bold text-dark">PLC</label>
-                        @Html.DropDownListFor(m => m.PLCName, new SelectList(ViewBag.ddlPLC, "Value", "Text"), new { @class = "form-control", @style="height: 45px;" })
+                        @Html.DropDownListFor(m => m.PLCName, (IEnumerable<SelectListItem>)ViewBag.ddlPLC, new { @class = "form-control font-weight-bold", @style="height: 45px; border-radius: 10px; border: 1px solid #cbd5e1; color: #1e293b; background-color: #ffffff;" })
                     </div>
                     <div class="col-md-3 mb-3">
                         <label class="d-block text-white">&nbsp;</label>
-                        <button type="submit" name="SearchPlot" value="Search" id="btnSearchPlot" class="btn btn-primary btn-block shadow-sm" style="height: 45px;" onclick="return load();">
+                        <button type="submit" name="SearchPlot" value="Search" id="btnSearchPlot" class="btn btn-primary btn-block shadow-sm font-weight-bold" style="height: 45px; border-radius: 10px; background: linear-gradient(135deg, #1e3a8a, #1e40af);" onclick="return load();">
                             <i class="fas fa-search mr-1"></i> Search Plots
                         </button>
                     </div>

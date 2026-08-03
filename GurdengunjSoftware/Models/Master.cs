@@ -50,6 +50,7 @@ namespace RealEstateRegalSpace.Models
         public string SectorName { get; set; }
         public string BlockID { get; set; }
         public string BlockName { get; set; }
+        public string PlotSize { get; set; }
         public string LoginId { get; set; }
         public DataTable dtPLCCharge { get; set; }
         public List<Master> lstPLC { get; set; }

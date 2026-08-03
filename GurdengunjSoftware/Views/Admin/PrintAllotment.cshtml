@@ -9,7 +9,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Payment Receipt - Gurdengunj Infratech</title>
+    <title>Payment Receipt - GARDENESTATE VENTURES</title>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/all.min.css">
     
@@ -336,11 +336,11 @@
 
     @helper renderReceipt(string copyType) {
         <div class="receipt-wrapper">
-            <div class="watermark">Gurdengunj Infratech</div>
+            <div class="watermark">GARDENESTATE VENTURES</div>
             
             <div class="header">
                 <div class="logo-box">
-                    <img src="/files/assets/images/logo.png" alt="Gurdengunj Logo">
+                    <img src="/files/assets/images/logo.png" alt="Gardenestate Ventures Logo">
                 </div>
                 <div class="receipt-title-box">
                     <h1 class="receipt-title">Payment Receipt</h1>
@@ -450,7 +450,11 @@
                         <td>BASIC AMOUNT</td>
                         <td style="text-align: right; font-weight: 700;">@ViewBag.PaidAmount</td>
                     </tr>
-                    @if (Convert.ToDecimal(ViewBag.TotalPLC) > 0)
+                    @{
+                        decimal totalPlcVal = 0;
+                        decimal.TryParse(Convert.ToString(ViewBag.TotalPLC), out totalPlcVal);
+                    }
+                    @if (totalPlcVal > 0)
                     {
                         <tr>
                             <td>PLC Charges</td>
@@ -520,7 +524,7 @@
                     <i class="fas fa-phone"></i> +91-8175928000
                 </div>
                 <div class="footer-contact">
-                    <i class="fas fa-globe"></i> Gurdengunj.com
+                    <i class="fas fa-globe"></i> gardenestateventures.com
                 </div>
             </div>
         </div>
@@ -528,3 +532,5 @@
 
 </body>
 </html>
+
+

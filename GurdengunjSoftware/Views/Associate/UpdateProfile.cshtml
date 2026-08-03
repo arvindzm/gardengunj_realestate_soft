@@ -1,178 +1,135 @@
 @model RealEstateRegalSpace.Models.UpdateProfile
 
 @{
-    ViewBag.Title = "UpdateProfile";
+    ViewBag.Title = "Update Profile";
     Layout = "~/Views/Shared/Layout.cshtml";
 }
 
-@section Header{
-    <div class="row align-items-center">
-        <div class="col-md-8">
-            <div class="page-header-title">
-                <h5 class="m-b-10">Profile </h5>
+<style>
+    .associate-page-title {
+        font-size: 1.75rem;
+        font-weight: 800;
+        color: #1e293b;
+        margin-bottom: 1.5rem;
+    }
+    .modern-card {
+        background: #ffffff;
+        border-radius: 16px;
+        border: none;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+        padding: 28px;
+        margin-bottom: 24px;
+    }
+    .form-control-modern {
+        border-radius: 10px !important;
+        border: 1px solid #cbd5e1 !important;
+        height: 44px !important;
+        font-size: 0.925rem !important;
+        font-weight: 500 !important;
+        color: #1e293b !important;
+        padding: 8px 16px !important;
+    }
+    .form-label-modern {
+        font-weight: 600;
+        font-size: 0.875rem;
+        color: #475569;
+        margin-bottom: 6px;
+    }
+    .btn-save-modern {
+        background: #10b981 !important;
+        border: none !important;
+        border-radius: 10px !important;
+        height: 46px !important;
+        font-weight: 700 !important;
+        font-size: 1rem !important;
+        color: #ffffff !important;
+        padding: 0 32px !important;
+        box-shadow: 0 4px 14px rgba(16, 185, 129, 0.3) !important;
+        transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+    }
+    .btn-save-modern:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 6px 18px rgba(16, 185, 129, 0.4) !important;
+        color: #ffffff !important;
+    }
+</style>
 
-            </div>
-        </div>
-        <div class="col-md-4">
-            <ul class="breadcrumb">
-                <li class="breadcrumb-item">
-                    <a href="javascript:void(0)"> <i class="fa fa-home"></i> </a>
-                </li>
+<div class="container-fluid pt-3">
+    <h2 class="associate-page-title">Update Profile</h2>
 
+    @using (Html.BeginForm("UpdateProfile", "Associate", FormMethod.Post, new { @id = "form1", enctype = "multipart/form-data" }))
+    {
+        <div class="modern-card">
+            @if (TempData["Profile"] != null)
+            {
+                <div class="alert alert-info alert-dismissible fade show mb-4 rounded-lg font-weight-bold" role="alert">
+                    <i class="fas fa-info-circle mr-2"></i>@TempData["Profile"]
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            }
 
-                <li class="breadcrumb-item">
-                    <a href="javascript:void(0);">Update Profile</a>
-                </li>
-
-            </ul>
-        </div>
-    </div>
-}
-
-
-@using (Html.BeginForm("UpdateProfile", "Associate", FormMethod.Post, new { @id = "form1", enctype = "multipart/form-data" }))
-{
-    <div class="card">
-        <div class="card-header">
-            <h5>Update Profile</h5>
-
-        </div>
-        <div class="card-block">
-
-            <!-- Page-Title -->
-
-            <div class="form-group row">
-                <div class="col-lg-12">
-
-                    <div class="row">
-                        <div class="col-xl-4 col-lg col-md-4 col-sm-4 col-12">
-                            <div class="form-group">
-                                <label>First Name</label>
-                                @Html.TextBoxFor(m => m.FirstName, new { @class = "form-control", @placeholder = "First Name" })
-                            </div>
-                        </div>
-                        <div class="col-xl-4 col-lg col-md-4 col-sm-4 col-12">
-                            <div class="form-group">
-                                <label>Last Name</label>
-                                @Html.TextBoxFor(m => m.LastName, new { @class = "form-control", @placeholder = "Last Name" })
-
-                            </div>
-                        </div>
-                        <div class="col-xl-4 col-lg col-md-4 col-sm-4 col-12">
-                            <div class="form-group">
-                                <label>Mobile No</label>
-                                @Html.TextBoxFor(m => m.Mobile, new { @class = "form-control", @placeholder = "Mobile No", @readonly = "re" })
-
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row gutters">
-                        <div class="col-xl-4 col-lg col-md-4 col-sm-4 col-12">
-                            <div class="form-group">
-                                <label>Email</label>
-                                @Html.TextBoxFor(m => m.Email, new { @class = "form-control", @placeholder = "Email" })
-                            </div>
-                        </div>
-                        <div class="col-xl-4 col-lg col-md-4 col-sm-4 col-12">
-                            <div class="form-group">
-                                <label>Account No</label>
-                                @Html.TextBoxFor(m => m.AccountNo, new { @class = "form-control", @placeholder = "Account No" })
-
-                            </div>
-                        </div>
-                        <div class="col-xl-4 col-lg col-md-4 col-sm-4 col-12">
-                            <div class="form-group">
-                                <label>Bank Name</label>
-                                @Html.TextBoxFor(m => m.BankName, new { @class = "form-control", @placeholder = "Bank Name" })
-
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row gutters">
-                        <div class="col-xl-4 col-lg col-md-4 col-sm-4 col-12">
-                            <div class="form-group">
-                                <label>Bank Branch</label>
-                                @Html.TextBoxFor(m => m.BankBranch, new { @class = "form-control", @placeholder = "Bank Branch" })
-                            </div>
-                        </div>
-                        <div class="col-xl-4 col-lg col-md-4 col-sm-4 col-12">
-                            <div class="form-group">
-                                <label>IFSC</label>
-                                @Html.TextBoxFor(m => m.IFSC, new { @class = "form-control", @placeholder = "IFSC" })
-
-                            </div>
-                        </div>
-                        <div class="col-xl-4 col-lg col-md-4 col-sm-4 col-12">
-                            <div class="form-group">
-                                <label>Profile Pic</label>
-                                <input type="file" name="postedFile" id="Image" />
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row gutters">
-
-                        <div class="col-xl-6 col-lg col-md-6 col-sm-6 col-12">
-                            <div class="form-group">
-                                <br />
-                                <input class="btn btn-success" type="submit" onclick="return validateform();" value="Update Profile" id="btnchange" name="Update Profile" />
-
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <p style="color:red">@TempData["Profile"] </p>
-                    </div>
-
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <label class="form-label-modern">First Name <span class="text-danger">*</span></label>
+                    @Html.TextBoxFor(m => m.FirstName, new { @class = "form-control form-control-modern", @placeholder = "First Name" })
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label class="form-label-modern">Last Name <span class="text-danger">*</span></label>
+                    @Html.TextBoxFor(m => m.LastName, new { @class = "form-control form-control-modern", @placeholder = "Last Name" })
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label class="form-label-modern">Mobile No <span class="text-danger">*</span></label>
+                    @Html.TextBoxFor(m => m.Mobile, new { @class = "form-control form-control-modern", @placeholder = "Mobile No", @readonly = "readonly" })
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label class="form-label-modern">Email <span class="text-danger">*</span></label>
+                    @Html.TextBoxFor(m => m.Email, new { @class = "form-control form-control-modern", @placeholder = "Email" })
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label class="form-label-modern">Account No <span class="text-danger">*</span></label>
+                    @Html.TextBoxFor(m => m.AccountNo, new { @class = "form-control form-control-modern", @placeholder = "Account No" })
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label class="form-label-modern">Bank Name <span class="text-danger">*</span></label>
+                    @Html.TextBoxFor(m => m.BankName, new { @class = "form-control form-control-modern", @placeholder = "Bank Name" })
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label class="form-label-modern">Bank Branch <span class="text-danger">*</span></label>
+                    @Html.TextBoxFor(m => m.BankBranch, new { @class = "form-control form-control-modern", @placeholder = "Bank Branch" })
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label class="form-label-modern">IFSC Code <span class="text-danger">*</span></label>
+                    @Html.TextBoxFor(m => m.IFSC, new { @class = "form-control form-control-modern", @placeholder = "IFSC Code" })
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label class="form-label-modern">Profile Picture</label>
+                    <input type="file" name="postedFile" id="Image" class="form-control-file border rounded p-2 bg-light w-100" />
                 </div>
             </div>
+
+            <div class="mt-4">
+                <button type="submit" onclick="return validateform();" class="btn btn-save-modern" id="btnchange" name="Update Profile">
+                    <i class="fas fa-check-circle mr-2"></i>Update Profile
+                </button>
+            </div>
         </div>
-    </div>
-}
-<script src="~/Scripts/jquery-1.10.2.min.js"></script>
+    }
+</div>
 
 <script>
     function validateform() {
-
-        $(".errortext").removeClass("errortext");
-
-
         if ($('#FirstName').val() == '') {
-            $("#FirstName").addClass('errortext');
+            alert('Please enter First Name');
             $('#FirstName').focus();
             return false;
         }
         if ($('#LastName').val() == '') {
-            $("#LastName").addClass('errortext');
+            alert('Please enter Last Name');
             $('#LastName').focus();
             return false;
         }
-        if ($('#Mobile').val() == '') {
-            $("#Mobile").addClass('errortext');
-            $('#Mobile').focus();
-            return false;
-        }
-        if ($('#AccountNo').val() == '') {
-            $("#AccountNo").addClass('errortext');
-            $('#AccountNo').focus();
-            return false;
-        }
-        if ($('#BankName').val() == '') {
-            $("#BankName").addClass('errortext');
-            $('#BankName').focus();
-            return false;
-        }
-        if ($('#BankBranch').val() == '') {
-            $("#BankBranch").addClass('errortext');
-            $('#BankBranch').focus();
-            return false;
-        }
-        if ($('#IFSC').val() == '') {
-            $("#IFSC").addClass('errortext');
-            $('#IFSC').focus();
-            return false;
-        }
-
-        $("#divload").css({ 'display': '' });
         return true;
     }
 </script>

@@ -1,0 +1,174 @@
+@model RealEstateRegalSpace.Models.Dashboard
+
+@{
+    ViewBag.Title = "DashBoard";
+    Layout = "~/Views/Shared/Layout.cshtml";
+}
+
+<style>
+    .classic-stat-card {
+        border-radius: 14px;
+        padding: 24px 20px;
+        min-height: 125px;
+        color: #ffffff;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        margin-bottom: 20px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        text-decoration: none !important;
+    }
+    .classic-stat-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        text-decoration: none !important;
+        color: #ffffff;
+    }
+    .classic-card-title {
+        font-size: 0.9rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: #ffffff;
+        margin-bottom: 8px;
+    }
+    .classic-card-value {
+        font-size: 1.85rem;
+        font-weight: 800;
+        color: #ffffff;
+        margin-bottom: 0;
+        line-height: 1.1;
+    }
+    .bg-card-direct { background-color: #00c9a7; }
+    .bg-card-downline { background-color: #8e24aa; }
+    .bg-card-business { background-color: #f39c12; }
+    .bg-card-level { background-color: #ce93d8; }
+    .bg-card-levelincome { background-color: #7986cb; }
+    .bg-card-tds { background-color: #ab47bc; }
+    .bg-card-admincharge { background-color: #c62828; }
+    .bg-card-netamount { background-color: #8d6e63; }
+    .bg-card-advance { background-color: #8bc34a; }
+</style>
+
+<div class="container-fluid pt-2">
+    <!-- Top Header Title Row -->
+    <div class="row align-items-center mb-3">
+        <div class="col-6">
+            <h2 class="font-weight-bold mb-0" style="color: #212529; font-size: 1.75rem;">Dashboard</h2>
+        </div>
+        <div class="col-6 text-right">
+            <span class="text-muted font-weight-bold" style="font-size: 0.95rem;">Dashboard</span>
+        </div>
+    </div>
+
+    <!-- Welcome Greeting -->
+    @{
+        string welcomeName = Session["FullName"] != null ? Session["FullName"].ToString() : (Session["LoginId"] != null ? Session["LoginId"].ToString() : "AUCTECH");
+    }
+    <h3 class="font-weight-bold mb-3" style="color: #0000ff; font-size: 1.6rem;">Welcome Back @welcomeName</h3>
+
+    <!-- KYC Alert Notice -->
+    <div class="mb-4" style="color: #ff0000; font-size: 1.2rem; font-weight: 700; line-height: 1.5;">
+        @Html.Raw("Note : Please update your KYC Details otherwise your payout is not released. \u0928\u094B\u091F: \u0915\u0943\u092A\u092F\u093E \u0905\u092A\u0928\u093E KYC \u0905\u092A\u0921\u0947\u091F \u0915\u0930\u0947\u0902 \u0905\u0928\u094D\u092F\u0925\u093E \u0906\u092A\u0915\u093E \u092D\u0941\u0917\u0924\u093E\u0928 \u091C\u093E\u0930\u0940 \u0928\u0939\u0940\u0902 \u0915\u093F\u092F\u093E \u091C\u093E\u090F\u0917\u093E\u0964")
+    </div>
+
+    <!-- Stat Cards Grid -->
+    @{
+        var assoc = (Model != null && Model.associateDetails != null && Model.associateDetails.Rows.Count > 0) ? Model.associateDetails.Rows[0] : null;
+        var invRow = (Model != null && Model.investmentDetails != null && Model.investmentDetails.Rows.Count > 0) ? Model.investmentDetails.Rows[0] : null;
+
+        Func<object, string> formatAmt = (val) => {
+            if (val == null || val == DBNull.Value || string.IsNullOrEmpty(val.ToString())) return "0.00";
+            decimal d;
+            if (decimal.TryParse(val.ToString(), out d)) return d.ToString("N2");
+            return val.ToString();
+        };
+
+        string totalDirect = (assoc != null && assoc.Table.Columns.Contains("TotalDirect") && assoc["TotalDirect"] != DBNull.Value) ? assoc["TotalDirect"].ToString() : "0";
+        string totalDownline = (assoc != null && assoc.Table.Columns.Contains("TotalDownline") && assoc["TotalDownline"] != DBNull.Value) ? assoc["TotalDownline"].ToString() : "0";
+        string totalBusiness = formatAmt(assoc != null && assoc.Table.Columns.Contains("TotalBusiness") ? assoc["TotalBusiness"] : null);
+        string currentLevel = (invRow != null && invRow.Table.Columns.Contains("DesignationName") && invRow["DesignationName"] != DBNull.Value) ? invRow["DesignationName"].ToString() : "0";
+
+        string levelIncome = formatAmt(invRow != null && invRow.Table.Columns.Contains("LevelIncome") ? invRow["LevelIncome"] : null);
+        string tds = formatAmt(invRow != null && invRow.Table.Columns.Contains("TDS") ? invRow["TDS"] : null);
+        string adminCharge = formatAmt(invRow != null && invRow.Table.Columns.Contains("AdminCharge") ? invRow["AdminCharge"] : null);
+        string netAmount = formatAmt(invRow != null && invRow.Table.Columns.Contains("NetAmount") ? invRow["NetAmount"] : null);
+        string advancePayment = formatAmt(assoc != null && assoc.Table.Columns.Contains("AdvanceAmount") && assoc["AdvanceAmount"] != DBNull.Value ? assoc["AdvanceAmount"] : (invRow != null && invRow.Table.Columns.Contains("AdvanceAmount") ? invRow["AdvanceAmount"] : null));
+    }
+
+    <!-- Stat Cards Rows -->
+    <div class="row">
+        <!-- Card 1: TOTAL DIRECT -->
+        <div class="col-xl-3 col-lg-3 col-md-6 col-sm-12">
+            <a href="/Associate/Direct" class="classic-stat-card bg-card-direct">
+                <div class="classic-card-title">TOTAL DIRECT</div>
+                <div class="classic-card-value">@totalDirect</div>
+            </a>
+        </div>
+
+        <!-- Card 2: TOTAL DOWNLINE -->
+        <div class="col-xl-3 col-lg-3 col-md-6 col-sm-12">
+            <a href="/Associate/Downline" class="classic-stat-card bg-card-downline">
+                <div class="classic-card-title">TOTAL DOWNLINE</div>
+                <div class="classic-card-value">@totalDownline</div>
+            </a>
+        </div>
+
+        <!-- Card 3: TOTAL BUSINESS -->
+        <div class="col-xl-3 col-lg-3 col-md-6 col-sm-12">
+            <a href="/Associate/BusinessReport" class="classic-stat-card bg-card-business">
+                <div class="classic-card-title">TOTAL BUSINESS</div>
+                <div class="classic-card-value">&#8377;@totalBusiness</div>
+            </a>
+        </div>
+
+        <!-- Card 4: CURRENT LEVEL -->
+        <div class="col-xl-3 col-lg-3 col-md-6 col-sm-12">
+            <div class="classic-stat-card bg-card-level">
+                <div class="classic-card-title">CURRENT LEVEL</div>
+                <div class="classic-card-value">@currentLevel</div>
+            </div>
+        </div>
+
+        <!-- Card 5: LEVEL INCOME -->
+        <div class="col-xl-3 col-lg-3 col-md-6 col-sm-12">
+            <a href="/Associate/PayoutReport" class="classic-stat-card bg-card-levelincome">
+                <div class="classic-card-title">LEVEL INCOME</div>
+                <div class="classic-card-value">&#8377;@levelIncome</div>
+            </a>
+        </div>
+
+        <!-- Card 6: TDS -->
+        <div class="col-xl-3 col-lg-3 col-md-6 col-sm-12">
+            <a href="/Associate/PayoutReport" class="classic-stat-card bg-card-tds">
+                <div class="classic-card-title">TDS</div>
+                <div class="classic-card-value">&#8377;@tds</div>
+            </a>
+        </div>
+
+        <!-- Card 7: ADMIN CHARGE -->
+        <div class="col-xl-3 col-lg-3 col-md-6 col-sm-12">
+            <a href="/Associate/PayoutReport" class="classic-stat-card bg-card-admincharge">
+                <div class="classic-card-title">ADMIN CHARGE</div>
+                <div class="classic-card-value">&#8377;@adminCharge</div>
+            </a>
+        </div>
+
+        <!-- Card 8: NET AMOUNT -->
+        <div class="col-xl-3 col-lg-3 col-md-6 col-sm-12">
+            <a href="/Associate/PayoutLedger" class="classic-stat-card bg-card-netamount">
+                <div class="classic-card-title">NET AMOUNT</div>
+                <div class="classic-card-value">&#8377;@netAmount</div>
+            </a>
+        </div>
+
+        <!-- Card 9: ADVANCE PAYMENT -->
+        <div class="col-xl-3 col-lg-3 col-md-6 col-sm-12">
+            <a href="/Associate/AdvancePaymentList" class="classic-stat-card bg-card-advance">
+                <div class="classic-card-title">ADVANCE PAYMENT</div>
+                <div class="classic-card-value">&#8377;@advancePayment</div>
+            </a>
+        </div>
+    </div>
+</div>

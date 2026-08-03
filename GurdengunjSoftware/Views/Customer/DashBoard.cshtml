@@ -1,146 +1,220 @@
 @model RealEstateRegalSpace.Models.Dashboard
 
 @{
-    ViewBag.Title = "DashBoard";
+    ViewBag.Title = "Customer Dashboard";
     Layout = "~/Views/Shared/CustomerLayout.cshtml";
 }
 
-
+<style>
+    /* Modern Stat Cards matching Admin Dashboard */
+    .stat-card {
+        background: #fff;
+        border-radius: 12px;
+        border: none;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        position: relative;
+        overflow: hidden;
+        min-height: 140px;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        padding: 20px;
+    }
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        text-decoration: none;
+    }
+    .stat-card-border-left {
+        border-left: 6px solid var(--card-color);
+    }
+    .stat-card-border-bottom::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 20px;
+        right: 20px;
+        height: 3px;
+        background: var(--card-color);
+        border-radius: 3px 3px 0 0;
+    }
+    .stat-card-title {
+        color: #6c757d;
+        font-size: 0.85rem;
+        font-weight: 500;
+        margin-top: 5px;
+        margin-bottom: 0;
+    }
+    .stat-card-value {
+        color: #212529;
+        font-size: 1.8rem;
+        font-weight: 800;
+        margin-bottom: 0;
+        line-height: 1.2;
+    }
+    .stat-badge {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        padding: 4px 8px;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 700;
+    }
+    .badge-soft-success { background: #e6f4ea; color: #1e8e3e; }
+    .badge-soft-warning { background: #fff7ed; color: #ea580c; }
+    .badge-soft-danger { background: #fce8e6; color: #d93025; }
+    .badge-soft-secondary { background: #f1f3f4; color: #5f6368; }
+    .badge-soft-primary { background: #eef2ff; color: #4f46e5; }
+    .stat-card-footer {
+        text-align: right;
+        font-size: 0.85rem;
+        font-weight: 500;
+        margin-top: 15px;
+    }
+    .dashboard-row {
+        margin-right: -8px !important;
+        margin-left: -8px !important;
+    }
+    .dashboard-row > [class*="col-"] {
+        padding-right: 8px !important;
+        padding-left: 8px !important;
+        margin-bottom: 16px !important;
+    }
+</style>
 
 <div class="wrapper">
     <div class="container-fluid">
         <!-- Page-Title -->
         <div class="page-title-box">
             <div class="row align-items-center">
-                <div class="col-sm-6">
-                    <h4 class="page-title">DashBoard</h4>
-                </div>
-                <div class="col-sm-6">
-                    <ol class="breadcrumb float-right">
-
-                        <li class="breadcrumb-item active">DashBoard</li>
-                    </ol>
+                <div class="col-sm-12">
+                    <h2 class="font-weight-bold mb-0" style="color: #2c3e50; font-size: 1.8rem;">Customer Dashboard</h2>
+                    <p class="text-muted mb-0" style="font-size: 0.95rem;">
+                        @{
+                            string customerName = Session["FullName"] != null ? Session["FullName"].ToString() : "Valued Customer";
+                        }
+                        Welcome back, @customerName &middot;
+                        <span style="color: #6c757d;"><i class="far fa-calendar-alt mr-1" style="color: #e87e1a;"></i> Last updated: @DateTime.Now.ToString("dd MMM yyyy, hh:mm tt")</span>
+                    </p>
                 </div>
             </div>
-            <!-- end row -->
         </div>
-        <div class="main-content">
-            @if (Model != null)
+
+        <div class="page-body" style="margin-top: 20px;">
+            @if (Model != null && Model.bageDetails != null && Model.bageDetails.Rows.Count > 0)
             {
-                if (Model.bageDetails != null)
-                {
-                    if (Model.bageDetails.Rows.Count > 0)
-                    {
-                        <div class="row gutters">
-                            <div class="col-xl-3 col-md-6 mb-4">
-                                <div class="card border-left-primary shadow h-100 py-2" style="background-color:#02c58d">
-                                    <div class="card-body">
-                                        <div class="row no-gutters align-items-center">
-                                            <div class="col mr-2">
-                                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1" style="color:#fff !important">
-                                                    Total Booking
-                                                </div>
-                                                <div class="h5 mb-0 font-weight-bold text-gray-800" style="color:#fff">@Model.bageDetails.Rows[0]["TotalBooking"].ToString()</div>
-                                            </div>
+                var row = Model.bageDetails.Rows[0];
+                string totalBooking = row.Table.Columns.Contains("TotalBooking") && row["TotalBooking"] != DBNull.Value ? row["TotalBooking"].ToString() : "0";
+                string allotedBooking = row.Table.Columns.Contains("AllotedBooking") && row["AllotedBooking"] != DBNull.Value ? row["AllotedBooking"].ToString() : "0";
+                string registeredBooking = row.Table.Columns.Contains("RegisteredBooking") && row["RegisteredBooking"] != DBNull.Value ? row["RegisteredBooking"].ToString() : "0";
+                string cancelledBooking = row.Table.Columns.Contains("CancelledBooking") && row["CancelledBooking"] != DBNull.Value ? row["CancelledBooking"].ToString() : "0";
+                string dueAmount = row.Table.Columns.Contains("DueAmount") && row["DueAmount"] != DBNull.Value ? row["DueAmount"].ToString() : "0.00";
 
-                                        </div>
-                                    </div>
-                                </div>
+                <!-- Row 1: Primary Booking KPIs -->
+                <div class="row dashboard-row">
+                    <!-- Total Booking -->
+                    <div class="col-xl-3 col-md-6 mb-4">
+                        <a href="/Customer/BookingList" class="stat-card stat-card-border-left" style="--card-color: #6eb544;">
+                            <div>
+                                <h3 class="stat-card-value">@totalBooking</h3>
+                                <p class="stat-card-title">Total Bookings</p>
                             </div>
-
-                            <div class="col-xl-3 col-md-6 mb-4">
-                                <div class="card border-left-primary shadow h-100 py-2" style="background-color:#990099">
-                                    <div class="card-body">
-                                        <div class="row no-gutters align-items-center">
-                                            <div class="col mr-2">
-                                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1" style="color:#fff !important">
-                                                    Cancelled Booking
-                                                </div>
-                                                <div class="h5 mb-0 font-weight-bold text-gray-800" style="color:#fff !important">@Model.bageDetails.Rows[0]["CancelledBooking"].ToString()</div>
-                                            </div>
-
-                                        </div>
-                                    </div>
-                                </div>
+                            <span class="stat-badge badge-soft-success">Total</span>
+                            <div class="stat-card-footer text-success">
+                                View Bookings &rarr;
                             </div>
-                            <div class="col-xl-3 col-md-6 mb-4">
-                                <div class="card border-left-primary shadow h-100 py-2" style="background-color:#fcbe2d">
-                                    <div class="card-body">
-                                        <div class="row no-gutters align-items-center">
-                                            <div class="col mr-2">
-                                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1" style="color:#fff !important">
-                                                    Alloted Booking
-                                                </div>
-                                                <div class="h5 mb-0 font-weight-bold text-gray-800" style="color:#fff !important">@Model.bageDetails.Rows[0]["AllotedBooking"].ToString()</div>
-                                            </div>
+                        </a>
+                    </div>
 
-                                        </div>
-                                    </div>
-                                </div>
+                    <!-- Alloted Booking -->
+                    <div class="col-xl-3 col-md-6 mb-4">
+                        <a href="/Customer/BookingList" class="stat-card stat-card-border-left" style="--card-color: #e87e1a;">
+                            <div>
+                                <h3 class="stat-card-value">@allotedBooking</h3>
+                                <p class="stat-card-title">Allotted Bookings</p>
                             </div>
-                            <div class="col-xl-3 col-md-6 mb-4">
-                                <div class="card border-left-primary shadow h-100 py-2" style="background-color:#8893cc">
-                                    <div class="card-body">
-                                        <div class="row no-gutters align-items-center">
-                                            <div class="col mr-2">
-                                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1" style="color:#fff !important">
-                                                    Registered Booking
-                                                </div>
-                                                <div class="h5 mb-0 font-weight-bold text-gray-800" style="color:#fff !important">@Model.bageDetails.Rows[0]["RegisteredBooking"].ToString()</div>
-                                            </div>
-
-                                        </div>
-                                    </div>
-                                </div>
+                            <span class="stat-badge badge-soft-warning">Allotted</span>
+                            <div class="stat-card-footer text-warning">
+                                View Details &rarr;
                             </div>
+                        </a>
+                    </div>
 
-
-
-
-
-
-
-                        </div>
-                        <div class="row gutters">
-                            <div class="col-xl-3 col-md-6 mb-4">
-                                <div class="card border-left-primary shadow h-100 py-2" style="background-color:#30419b">
-                                    <div class="card-body">
-                                        <div class="row no-gutters align-items-center">
-                                            <div class="col mr-2">
-                                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1" style="color:#fff !important">
-                                                    Due Amount
-                                                </div>
-                                                <div class="h5 mb-0 font-weight-bold text-gray-800" style="color:#fff">@Model.bageDetails.Rows[0]["DueAmount"].ToString()</div>
-                                            </div>
-
-                                        </div>
-                                    </div>
-                                </div>
+                    <!-- Registered Booking -->
+                    <div class="col-xl-3 col-md-6 mb-4">
+                        <a href="/Customer/BookingList" class="stat-card stat-card-border-left" style="--card-color: #20c997;">
+                            <div>
+                                <h3 class="stat-card-value">@registeredBooking</h3>
+                                <p class="stat-card-title">Registered Bookings</p>
                             </div>
+                            <span class="stat-badge badge-soft-primary">Registered</span>
+                            <div class="stat-card-footer text-primary">
+                                View Status &rarr;
+                            </div>
+                        </a>
+                    </div>
 
+                    <!-- Cancelled Booking -->
+                    <div class="col-xl-3 col-md-6 mb-4">
+                        <a href="/Customer/BookingList" class="stat-card stat-card-border-left" style="--card-color: #dc3545;">
+                            <div>
+                                <h3 class="stat-card-value">@cancelledBooking</h3>
+                                <p class="stat-card-title">Cancelled Bookings</p>
+                            </div>
+                            <span class="stat-badge badge-soft-danger">Cancelled</span>
+                            <div class="stat-card-footer text-danger">
+                                View Details &rarr;
+                            </div>
+                        </a>
+                    </div>
+                </div>
 
+                <!-- Row 2: Due Amount & Quick Action Links -->
+                <div class="row dashboard-row">
+                    <!-- Due Amount -->
+                    <div class="col-xl-4 col-md-6 mb-4">
+                        <a href="/Customer/DueInstallmentReport" class="stat-card stat-card-border-bottom" style="--card-color: #6610f2;">
+                            <div>
+                                <h3 class="stat-card-value">Rs. @dueAmount</h3>
+                                <p class="stat-card-title">Total Due Installments</p>
+                            </div>
+                            <span class="stat-badge badge-soft-secondary">Pending Payment</span>
+                            <div class="stat-card-footer text-purple" style="color: #6610f2;">
+                                Pay / View Due Installments &rarr;
+                            </div>
+                        </a>
+                    </div>
 
+                    <!-- Quick Action 1: Booking Details -->
+                    <div class="col-xl-4 col-md-6 mb-4">
+                        <a href="/Customer/BookingList" class="stat-card stat-card-border-bottom" style="--card-color: #004191;">
+                            <div>
+                                <h3 class="stat-card-value" style="font-size: 1.2rem; color: #004191;"><i class="fas fa-file-invoice mr-2"></i>Booking Details</h3>
+                                <p class="stat-card-title">View full ledger of plot bookings</p>
+                            </div>
+                            <div class="stat-card-footer text-primary">
+                                Open Booking Ledger &rarr;
+                            </div>
+                        </a>
+                    </div>
 
-
-                        </div>
-                    }
-                }
+                    <!-- Quick Action 2: Plot Availability -->
+                    <div class="col-xl-4 col-md-6 mb-4">
+                        <a href="/Customer/PlotAvailbilty" class="stat-card stat-card-border-bottom" style="--card-color: #6eb544;">
+                            <div>
+                                <h3 class="stat-card-value" style="font-size: 1.2rem; color: #16a34a;"><i class="fas fa-map-marked-alt mr-2"></i>Plot Availability</h3>
+                                <p class="stat-card-title">Explore available sites & plots</p>
+                            </div>
+                            <div class="stat-card-footer text-success">
+                                Check Availability &rarr;
+                            </div>
+                        </a>
+                    </div>
+                </div>
             }
-
-            
-
-
-
-
-            
         </div>
     </div>
 </div>
-<script src="../../Scripts/jquery-1.10.2.min.js"></script>
-
-<script>
-    $(document).ready(function () {
-        $("#divload").css({ 'display': 'none' });
-    });
-
-</script>

@@ -1,231 +1,170 @@
-@model RealEstateRegalSpace.Models.Plot
-
 @{
-    ViewBag.Title = "HoldList";
+    ViewBag.Title = "Plot Hold Approval Requests";
     Layout = "~/Views/Shared/AdminLayout.cshtml";
+    var dt = ViewBag.HoldList as System.Data.DataTable;
 }
-@using (Html.BeginForm("HoldList", "Admin", FormMethod.Post, new { @id = "form1", enctype = "multipart/form-data" }))
-{
-    <div class="container-fluid">
-        <!-- Page-Title -->
-        <div class="page-title-box">
-            <div class="row align-items-center">
-                <div class="col-sm-6">
-                    <h4 class="page-title">Plot Hold Records</h4>
-                </div>
-            </div>
-        </div>
-
-        <!-- Filter Card -->
-        <div class="wizard-card animate-up">
-            <div class="card-header-premium">
-                <i class="fas fa-filter mr-2"></i> Search & Filter
-            </div>
-            <div class="p-4">
-                <div class="row">
-                    <div class="col-md-3 mb-3">
-                        <label class="font-weight-bold text-dark">Select Site</label>
-                        @Html.DropDownListFor(m => m.SiteID, new SelectList(ViewBag.ddlSite, "Value", "Text"), new { @class = "form-control", @onchange = "return onSiteChange();", @style="height: 45px;" })
-                    </div>
-                    <div class="col-md-3 mb-3">
-                        <label class="font-weight-bold text-dark">Select Sector</label>
-                        @Html.DropDownListFor(m => m.SectorID, new SelectList(ViewBag.ddlSector, "Value", "Text"), new { @class = "form-control", @onchange = "return onSectorChange();", @style="height: 45px;" })
-                    </div>
-                    <div class="col-md-3 mb-3">
-                        <label class="font-weight-bold text-dark">Select Block</label>
-                        @Html.DropDownListFor(m => m.BlockID, new SelectList(ViewBag.ddlBlock, "Value", "Text"), new { @class = "form-control", @style="height: 45px;" })
-                    </div>
-                    <div class="col-md-3 mb-3">
-                        <label class="font-weight-bold text-dark">Plot Number</label>
-                        @Html.TextBoxFor(m => m.PlotNumber, new { @class = "form-control", @Placeholder = "Search by Plot No", @style="height: 45px;" })
-                    </div>
-                </div>
-                <div class="row align-items-end mt-2">
-                    <div class="col-md-3 mb-3">
-                        <label class="d-block text-white">&nbsp;</label>
-                        <button type="submit" class="btn btn-primary btn-block shadow-sm" style="height: 45px;" id="btnSearch" name="Search" value="Search">
-                            <i class="fas fa-search mr-1"></i> Filter Hold List
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Table Card -->
-        <div class="wizard-card animate-up mt-4">
-            <div class="card-header-premium secondary">
-                <i class="fas fa-clock mr-2"></i> Active Hold List
-            </div>
-            <div class="p-0">
-                <div class="table-responsive">
-                    <table id="example23" class="table table-hover mb-0 custom-table">
-                        <thead>
-                            <tr>
-                                <th>S No.</th>
-                                <th>Plot Details</th>
-                                <th>Hold Amount</th>
-                                <th>Hold Duration</th>
-                                <th>Customer Name</th>
-                                <th>Mobile Number</th>
-                                <th class="text-center">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @if (Model != null && Model.lstPlot != null)
-                            {
-                                int i = 1;
-                                foreach (var Item in Model.lstPlot)
-                                {
-                                    <tr>
-                                        <td>@i</td>
-                                        <td><span class="badge badge-light border font-weight-bold">@Item.PlotNumber</span></td>
-                                        <td class="font-weight-bold text-success">@Item.Amount</td>
-                                        <td>
-                                            <div class="small">From: <span class="font-weight-bold">@Item.HoldFrom</span></div>
-                                            <div class="small">To: <span class="font-weight-bold">@Item.HoldTo</span></div>
-                                        </td>
-                                        <td class="text-dark font-weight-bold">@Item.Name</td>
-                                        <td><i class="fas fa-phone mr-1 small text-info"></i> @Item.Mobile</td>
-                                        <td class="text-center">
-                                            <a href="/Admin/DeletePlotHold?PK_PlotHoldID=@Item.PK_PlotHoldID" class="btn btn-outline-danger btn-sm rounded-pill px-3" onclick="return confirm('Are you sure you want to Unhold this plot?');">
-                                                <i class="fas fa-unlock mr-1"></i> Unhold
-                                            </a>
-                                        </td>
-                                    </tr>
-                                    i++;
-                                }
-                            }
-                        </tbody>
-                    </table>
-                </div>
+<style>
+.table-responsive {
+    background: #fff !important;
+    border-radius: var(--border-radius);
+    padding: 0px !important;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.02) !important;
+    margin-top: 0px;
+    margin-bottom: 0px;
+    overflow-x: scroll !important;
+    overflow-y: hidden !important;
+    display: block !important;
+    width: 100% !important;
+    scrollbar-width: auto;
+    scrollbar-color: #004191 #f8fafc;
+}
+.card-body, .card-block {
+    background: transparent !important;
+    padding: 10px !important;
+    margin: 0 !important;
+    box-shadow: none !important;
+}
+</style>
+<div class="container-fluid">
+    <!-- Page Title -->
+    <div class="page-title-box mt-3">
+        <div class="row align-items-center">
+            <div class="col-sm-8">
+                <h4 class="page-title font-weight-bold text-dark mb-0">
+                    <i class="fas fa-lock text-warning mr-2"></i> Plot Hold Requests & 24-Hour Approvals
+                </h4>
+                <p class="text-muted mb-0 small">Approve associate hold requests. Approved holds remain active for exactly 24 hours before auto-expiring back to Available.</p>
             </div>
         </div>
     </div>
-}
 
-<script src="~/files/bower_components/jquery/js/jquery.min.js"></script>
-<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
-<link rel="stylesheet" type="text/css" href="https://code.jquery.com/ui/1.12.0/themes/smoothness/jquery-ui.css">
+    <!-- Table Card -->
+    <div class="card shadow-sm border-0 mt-3" style="border-radius: 12px; overflow: hidden;">
+        <div class="card-header bg-dark text-white font-weight-bold py-3 d-flex justify-content-between align-items-center">
+            <span><i class="fas fa-clock mr-2 text-warning"></i> Plot Hold Requests Queue (@(dt != null ? dt.Rows.Count : 0) Total)</span>
+            <span class="badge badge-warning text-dark px-3 py-1 font-weight-bold">24-Hour Expiry Enabled</span>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover table-striped mb-0 align-middle">
+                    <thead class="bg-light text-uppercase small font-weight-bold text-secondary">
+                        <tr>
+                            <th class="py-3 px-3">#</th>
+                            <th class="py-3">Plot Details</th>
+                            <th class="py-3">Associate Details</th>
+                            <th class="py-3">Customer Details</th>
+                            <th class="py-3">Hold Status</th>
+                            <th class="py-3">Hold Timeline (24h)</th>
+                            <th class="py-3 text-center">Admin Approval Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (dt != null && dt.Rows.Count > 0)
+                        {
+                            int i = 1;
+                            foreach (System.Data.DataRow row in dt.Rows)
+                            {
+                                string id = row["PK_PlotHoldID"].ToString();
+                                string plotNo = row["PlotNumber"].ToString();
+                                string site = row["SiteName"].ToString();
+                                string block = row["BlockName"].ToString();
+                                string assocId = row["AssociateID"].ToString();
+                                string assocName = row["AssociateName"].ToString();
+                                string custName = row["CustomerName"].ToString();
+                                string custMobile = row["CustomerMobile"].ToString();
+                                string status = row["HoldStatus"].ToString();
+                                string holdFrom = row["HoldFrom"] != DBNull.Value ? Convert.ToDateTime(row["HoldFrom"]).ToString("dd MMM yyyy, hh:mm tt") : "---";
+                                string holdTo = row["HoldTo"] != DBNull.Value ? Convert.ToDateTime(row["HoldTo"]).ToString("dd MMM yyyy, hh:mm tt") : "---";
+
+                                string badgeClass = "badge-secondary";
+                                if (status == "Approved") { badgeClass = "badge-success"; }
+                                else if (status == "Pending") { badgeClass = "badge-warning text-dark"; }
+                                else if (status == "Rejected") { badgeClass = "badge-danger"; }
+                                else if (status == "Expired") { badgeClass = "badge-dark"; }
+
+                                <tr id="holdRow_@id">
+                                    <td class="px-3 font-weight-bold">@i</td>
+                                    <td>
+                                        <span class="badge badge-primary px-2 py-1 font-weight-bold">Plot @plotNo</span>
+                                        <div class="small text-muted font-weight-bold mt-1">@site (@block)</div>
+                                    </td>
+                                    <td>
+                                        <div class="font-weight-bold text-dark"><i class="fas fa-id-badge text-info mr-1"></i> @(string.IsNullOrEmpty(assocId) ? "Direct" : assocId)</div>
+                                        <div class="small text-muted font-weight-bold">@(string.IsNullOrEmpty(assocName) ? "---" : assocName)</div>
+                                    </td>
+                                    <td>
+                                        <div class="font-weight-bold text-dark"><i class="fas fa-user-circle text-primary mr-1"></i> @custName</div>
+                                        <div class="small"><a href="tel:@custMobile" class="font-weight-bold text-primary"><i class="fas fa-phone-alt mr-1"></i> @custMobile</a></div>
+                                    </td>
+                                    <td>
+                                        <span class="badge @badgeClass px-3 py-1 font-weight-bold" id="statusBadge_@id">@status</span>
+                                    </td>
+                                    <td>
+                                        <div class="small text-muted"><i class="far fa-clock mr-1"></i> <strong>From:</strong> @holdFrom</div>
+                                        <div class="small text-muted"><i class="fas fa-hourglass-half mr-1 text-warning"></i> <strong>To:</strong> @holdTo</div>
+                                    </td>
+                                    <td class="text-center" id="actionCell_@id">
+                                        @if (status == "Pending")
+                                        {
+                                            <button type="button" class="btn btn-sm btn-success px-3 font-weight-bold mr-1 shadow-sm" onclick="processHold(@id, 'Approve')" style="border-radius: 6px;">
+                                                <i class="fas fa-check-circle mr-1"></i> Approve (24h Hold)
+                                            </button>
+                                            <button type="button" class="btn btn-sm btn-outline-danger px-2 font-weight-bold shadow-sm" onclick="processHold(@id, 'Reject')" style="border-radius: 6px;">
+                                                <i class="fas fa-times-circle mr-1"></i> Reject
+                                            </button>
+                                        }
+                                        else if (status == "Approved")
+                                        {
+                                            <button type="button" class="btn btn-sm btn-warning text-dark px-3 font-weight-bold shadow-sm mr-1" onclick="processHold(@id, 'Reject')" style="border-radius: 6px;">
+                                                <i class="fas fa-undo mr-1"></i> Cancel Hold
+                                            </button>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted small font-italic">No action</span>
+                                        }
+                                    </td>
+                                </tr>
+                                i++;
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="7" class="text-center py-5 text-muted">
+                                    <i class="fas fa-inbox fa-3x mb-3 opacity-50"></i>
+                                    <h5>No Plot Hold Requests Found</h5>
+                                    <p class="mb-0">When associates request plot holds, they will appear here for Admin approval.</p>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
 
 <script>
-    $(document).ready(function () {
-        $("#divload").css({ 'display': 'none' });
-    });
+    function processHold(holdId, action) {
+        var actionText = action === 'Approve' ? 'APPROVE this plot hold for 24 Hours' : 'REJECT / CANCEL this plot hold';
+        if (!confirm('Are you sure you want to ' + actionText + '?')) return;
 
-    function onSiteChange() {
-        $("#divload").css({ 'display': '' });
-        var value = $('#SiteID').val();
         $.ajax({
-            url: "/Masters/GetSiteDetails",
-            Type: "Get",
-            DataType: "JSON",
-            data: { SiteID: value },
-            success: function (data) {
-                $("#divload").css({ 'display': 'none' });
-                if (data.Result == "yes") {
-                    $("#SectorID").empty();
-                    $("#SectorID").append($('<option></option>').val(0).html('Select Sector'));
-                    $.each(data.ddlSector, function (index, Sectorcount) {
-                        $("#SectorID").append($('<option></option>').val(Sectorcount.Value).html(Sectorcount.Text));
-                    });
+            url: '/Admin/ApproveRejectPlotHoldAjax',
+            type: 'POST',
+            data: { holdId: holdId, action: action },
+            success: function (res) {
+                if (res && res.Result == "1") {
+                    alert(res.Message);
+                    location.reload();
+                } else {
+                    alert(res && res.Message ? res.Message : 'Error processing request');
                 }
+            },
+            error: function () {
+                alert('Error processing request.');
             }
         });
     }
-
-    function onSectorChange() {
-        $("#divload").css({ 'display': '' });
-        var siteID = $('#SiteID').val();
-        var sectorID = $('#SectorID').val();
-        $.ajax({
-            url: '/Masters/GetBlockList', type: 'post', dataType: 'json',
-            data: { 'SiteID': siteID, 'sectorID': sectorID },
-            success: function (data) {
-                $("#divload").css({ 'display': 'none' });
-                $("#BlockID").empty();
-                $("#BlockID").append($('<option></option>').val(0).html('Select Block'));
-                $.each(data.lstBlock, function (index, BlockCount) {
-                    $("#BlockID").append($('<option></option>').val(BlockCount.Value).html(BlockCount.Text));
-                });
-            }
-        });
-    }
-</script>
-
-}
-
-<script src="~/files/bower_components/jquery/js/jquery.min.js"></script>
-<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
-<link rel="stylesheet" type="text/css" href="https://code.jquery.com/ui/1.12.0/themes/smoothness/jquery-ui.css">
-
-<script>
-
-    $(document).ready(function () {
-        $("#divload").css({ 'display': 'none' });
-    });
-
-
-    function onSiteChange() {
-        $("#divload").css({ 'display': '' });
-        var value = $('#SiteID').val();
-        var values = $('#SectorID').val();
-        var tr = [];
-        $.ajax({
-            url: "/Masters/GetSiteDetails",
-            Type: "Get",
-            DataType: "JSON",
-            data: { SiteID: value },
-            success: function (data) {
-                $("#divload").css({ 'display': 'none' });
-                var j = 1;
-                if (data.Result == "yes") {
-                    $('#Rate').val(data.Rate);
-                    $("#SectorID").html(""); // clear before appending new list
-                    $("#SectorID").empty();
-                    $("#SectorID").append(
-                        $('<option></option>').val(0).html('Select Sector'));
-                    $.each(data.ddlSector, function (index, Sectorcount) {
-                        $("#SectorID").append(
-                            $('<option></option>').val(Sectorcount.Value).html(Sectorcount.Text));
-
-                    });
-
-                }
-                else {
-                    $("#SectorID").empty();
-                    $('#Rate').val('');
-                }
-
-
-            }
-
-        });
-
-    }
-
-    function onSectorChange() {
-
-        $("#divload").css({ 'display': '' });
-        var siteID = $('#SiteID').val();
-        var sectorID = $('#SectorID').val();
-        $.ajax({
-            url: '/Masters/GetBlockList', type: 'post', dataType: 'json',
-            data: { 'SiteID': siteID, 'sectorID': sectorID },
-            success: function (data) {
-                $("#divload").css({ 'display': 'none' });
-                $("#BlockID").html(""); // clear before appending new list
-                $("#BlockID").empty();
-                $("#BlockID").append(
-                    $('<option></option>').val(0).html('Select Block'));
-                $.each(data.lstBlock, function (index, BlockCount) {
-                    $("#BlockID").append(
-                        $('<option></option>').val(BlockCount.Value).html(BlockCount.Text));
-                });
-
-            }
-
-        });
-    }
-
-
 </script>

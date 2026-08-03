@@ -1,25 +1,23 @@
 /* Premium Content Design System */
 
 :root {
-    --primary-gradient: linear-gradient(135deg, #004191 0%, #002b61 100%);
-    --accent-gradient: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
+    --primary-gradient: linear-gradient(135deg, #004191 0%, #1a237e 100%);
+    --accent-gradient: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
     --card-bg: #ffffff;
-    --input-bg: #fdfdfd;
-    --input-border: #e0e0e0;
+    --input-bg: #ffffff;
+    --input-border: #cbd5e1;
     --input-focus: #004191;
-    --text-main: #333333;
-    --text-muted: #666666;
-    --border-radius: 15px;
+    --text-main: #1e293b;
+    --text-muted: #64748b;
+    --border-radius: 12px;
     --input-radius: 8px;
     --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* Global Content Wrapper */
 .content-body {
-    padding: 30px;
-    background-color: #f0f2f5;
-    background-image: radial-gradient(#d1d5db 0.5px, transparent 0.5px);
-    background-size: 20px 20px;
+    padding: 20px;
+    background-color: #f8fafc;
     min-height: calc(100vh - 140px);
 }
 
@@ -29,20 +27,42 @@
     border: none !important;
     border-radius: var(--border-radius) !important;
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.04) !important;
-    padding: 30px !important;
-    /* margin-bottom: 30px !important; */
+    padding: 0 !important;
+    margin-bottom: 25px !important;
     transition: var(--transition);
-    height: 100%;
-    /* Ensure card fills container height */
+    overflow: hidden !important;
+}
+
+.card-header, 
+.card-header-premium,
+.panel-heading {
+    background: linear-gradient(135deg, #004191 0%, #1a237e 100%) !important;
+    color: #ffffff !important;
+    border-radius: 0 !important;
+    padding: 16px 25px !important;
+    font-weight: 600 !important;
+    font-size: 1.1rem !important;
+    border: none !important;
+    margin: 0 !important;
+    width: 100% !important;
+}
+
+.card-header h5, 
+.card-header h4, 
+.card-header h6, 
+.card-header-premium h5 {
+    color: #ffffff !important;
+    margin: 0 !important;
+    font-weight: 600 !important;
+    font-size: 1.1rem !important;
 }
 
 .card-body,
 .card-block {
     background: transparent !important;
-    padding: 0 !important;
+    padding: 25px !important;
     margin: 0 !important;
     box-shadow: none !important;
-    height: 100%;
 }
 
 .card:hover {
@@ -107,27 +127,27 @@ label,
 .form-control,
 input.form-control,
 select.form-control {
-    height: 50px !important;
-    background-color: #fdfdfd !important;
-    border: 1.5px solid #e2e8f0 !important;
-    border-radius: 10px !important;
-    padding: 12px 20px !important;
-    font-size: 0.95rem !important;
-    color: #1a202c !important;
+    height: 44px !important;
+    background-color: #ffffff !important;
+    border: 1px solid #cbd5e1 !important;
+    border-radius: 8px !important;
+    padding: 8px 14px !important;
+    font-size: 0.9rem !important;
+    color: #1e293b !important;
     transition: all 0.2s ease !important;
     box-shadow: none !important;
 }
 
 textarea.form-control {
-    background-color: #fdfdfd !important;
-    border: 1.5px solid #e2e8f0 !important;
-    border-radius: 10px !important;
-    padding: 12px 20px !important;
-    font-size: 0.95rem !important;
-    color: #1a202c !important;
+    background-color: #ffffff !important;
+    border: 1px solid #cbd5e1 !important;
+    border-radius: 8px !important;
+    padding: 8px 14px !important;
+    font-size: 0.9rem !important;
+    color: #1e293b !important;
     transition: all 0.2s ease !important;
     box-shadow: none !important;
-    min-height: 100px !important;
+    min-height: 90px !important;
     height: auto !important;
     resize: vertical !important;
 }
@@ -135,7 +155,7 @@ textarea.form-control {
 .form-control:focus {
     border-color: #004191 !important;
     background-color: #fff !important;
-    box-shadow: 0 0 0 4px rgba(0, 65, 145, 0.08) !important;
+    box-shadow: 0 0 0 3px rgba(0, 65, 145, 0.12) !important;
 }
 
 /* Custom Checkbox/Radio if needed */
@@ -188,26 +208,34 @@ select.form-control {
     border: none !important;
 }
 
-.btn-success {
-    background: linear-gradient(135deg, #28a745 0%, #218838 100%) !important;
+/* Premium Buttons */
+.btn-primary, .btn-submit {
+    background: var(--primary-gradient) !important;
+    border: none !important;
     color: white !important;
-    box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3) !important;
+    padding: 12px 25px !important;
+    border-radius: 10px !important;
+    font-weight: 600 !important;
+    transition: all 0.3s ease !important;
+    box-shadow: 0 4px 15px rgba(232, 126, 26, 0.2) !important;
+}
+
+.btn-primary:hover, .btn-submit:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 6px 20px rgba(232, 126, 26, 0.3) !important;
+    filter: brightness(1.1) !important;
+}
+
+.btn-success {
+    background: var(--accent-gradient) !important;
+    border: none !important;
+    box-shadow: 0 4px 15px rgba(110, 181, 68, 0.2) !important;
+    color: white !important;
 }
 
 .btn-success:hover {
     transform: translateY(-2px) !important;
-    box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4) !important;
-}
-
-.btn-primary {
-    background: var(--primary-gradient) !important;
-    color: white !important;
-    box-shadow: 0 4px 15px rgba(0, 65, 145, 0.3) !important;
-}
-
-.btn-primary:hover {
-    transform: translateY(-2px) !important;
-    box-shadow: 0 6px 20px rgba(0, 65, 145, 0.4) !important;
+    box-shadow: 0 6px 20px rgba(110, 181, 68, 0.3) !important;
 }
 
 /* Table Styling & DataTables Enhancements */
@@ -262,14 +290,13 @@ select.form-control {
 
 .table thead th {
     background-color: #f8fafc !important;
-    color: #4a5568 !important;
+    border-bottom: 2px solid var(--brand-green) !important;
+    color: var(--text-main) !important;
     font-weight: 700 !important;
     text-transform: uppercase !important;
+    letter-spacing: 0.5px !important;
     font-size: 0.75rem !important;
-    letter-spacing: 0.05em !important;
-    padding: 15px 20px !important;
-    border-bottom: 2px solid #edf2f7 !important;
-    border-top: none !important;
+    padding: 15px !important;
 }
 
 .table tbody td {

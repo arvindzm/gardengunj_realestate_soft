@@ -1,146 +1,210 @@
 @model RealEstateRegalSpace.Models.Reports
 
 @{
-    ViewBag.Title = "PayoutReport";
+    ViewBag.Title = "Payout Report";
     Layout = "~/Views/Shared/Layout.cshtml";
 }
 
-@using (Html.BeginForm("PayoutReport", "Associate", FormMethod.Post, new { @id = "form1", enctype = "multipart/form-data" }))
-{
-    <div class="wrapper">
-        <div class="container-fluid">
+<style>
+    .associate-page-title {
+        font-size: 1.75rem;
+        font-weight: 800;
+        color: #1e293b;
+        margin-bottom: 1.5rem;
+    }
+    .filter-card {
+        background: #ffffff;
+        border-radius: 16px;
+        border: none;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+        padding: 24px;
+        margin-bottom: 24px;
+    }
+    .form-control-modern {
+        border-radius: 10px !important;
+        border: 1px solid #cbd5e1 !important;
+        height: 44px !important;
+        font-size: 0.925rem !important;
+        font-weight: 500 !important;
+        color: #1e293b !important;
+        padding: 8px 16px !important;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
+    }
+    .form-control-modern:focus {
+        border-color: #10b981 !important;
+        box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15) !important;
+    }
+    .form-label-modern {
+        font-weight: 600;
+        font-size: 0.875rem;
+        color: #475569;
+        margin-bottom: 6px;
+    }
+    .btn-search-modern {
+        background: #10b981 !important;
+        border: none !important;
+        border-radius: 10px !important;
+        height: 44px !important;
+        font-weight: 700 !important;
+        font-size: 0.95rem !important;
+        color: #ffffff !important;
+        padding: 0 28px !important;
+        box-shadow: 0 4px 14px rgba(16, 185, 129, 0.3) !important;
+        transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+    }
+    .btn-search-modern:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 6px 18px rgba(16, 185, 129, 0.4) !important;
+        color: #ffffff !important;
+    }
+    .table-card {
+        background: #ffffff;
+        border-radius: 16px;
+        border: none;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+        overflow: hidden;
+    }
+    .table-modern {
+        width: 100%;
+        margin-bottom: 0;
+    }
+    .table-modern thead {
+        background: #f8fafc;
+        border-bottom: 2px solid #e2e8f0;
+    }
+    .table-modern thead th {
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: #475569;
+        padding: 14px 16px;
+        border: none;
+        white-space: nowrap;
+    }
+    .table-modern tbody tr {
+        border-bottom: 1px solid #f1f5f9;
+        transition: background-color 0.15s ease;
+    }
+    .table-modern tbody tr:hover {
+        background-color: #f8fafc;
+    }
+    .table-modern tbody td {
+        padding: 14px 16px;
+        font-size: 0.9rem;
+        color: #334155;
+        vertical-align: middle;
+        white-space: nowrap;
+    }
+</style>
 
-            <div class="card-block">
+<div class="container-fluid pt-3">
+    <h2 class="associate-page-title">Payout Report</h2>
 
-                <div class="page-title-box">
-                    <div class="row align-items-center">
-                        <div class="col-sm-6">
-                            <h4 class="page-title">Payout Report</h4>
-                        </div>
-                       
-                    </div>
-                    <!-- end row -->
+    @using (Html.BeginForm("PayoutReport", "Associate", FormMethod.Post, new { @id = "form1", enctype = "multipart/form-data" }))
+    {
+        <!-- Modern Filter Card -->
+        <div class="filter-card">
+            @if (TempData["PayoutReport"] != null)
+            {
+                <div class="alert alert-danger mb-3 rounded-lg font-weight-bold">
+                    @TempData["PayoutReport"]
                 </div>
-                <div class="form-group row">
-                    <div class="col-lg-12">
-                        <h6 style="color: red">
+            }
 
-                            @TempData["PayoutReport"]
-
-                        </h6>
-                        <div class="row">
-
-                            <div class="col-xl-3 col-lg col-md-3 col-sm-3 col-12">
-                                <div class="form-group">
-                                    <label>Payout No  </label>
-                                    @Html.TextBoxFor(m => m.PayoutNo, new { @class = "form-control", @onclick = "return isNumberOrDecimal(event);" })
-                                </div>
-                            </div>
-                            <div class="col-xl-3 col-lg col-md-3 col-sm-3 col-12">
-                                <div class="form-group">
-                                    <label>From Date  </label>
-                                    @Html.TextBoxFor(m => m.FromDate, new { @class = "form-control", @readonly = "readonly" })
-                                </div>
-                            </div>
-                            <div class="col-xl-3 col-lg col-md-3 col-sm-3 col-12">
-                                <div class="form-group">
-                                    <label>To Date  </label>
-                                    @Html.TextBoxFor(m => m.Todate, new { @class = "form-control", @readonly = "readonly" })
-                                </div>
-                            </div>
-                            <div class="col-xl-3 col-lg col-md-3 col-sm-3 col-12">
-                                <div class="form-group">
-                                    <br />
-                                    <input type="submit" id="btnSearch" class="btn btn-success pull-left" name="Search" value="Search" />
-                                </div>
-                            </div>
-                        </div>
-
-
-
-                        <div class="row gutters table-responsive">
-                            <table id="example23" class="table table-bordered">
-                                <thead>
-                                    <tr>
-                                        <th>Sr No.</th>
-                                        <th>Login Id</th>
-                                        <th>First Name</th>
-                                        <th>Payout No</th>
-                                        <th>Closing Date</th>
-                                        <th>Direct Income</th>
-                                        @if (Session["CommissionType"].ToString() == "Level")
-                                        {
-                                            <th>Level Income</th>
-                                        }
-                                        <th>Team Income</th>
-                                        <th>Other Income</th>
-
-                                        <th>Gross Amount</th>
-                                        <th>TDS Amount</th>
-                                        <th>Admin Charges</th>
-
-                                        <th>NET Payable Amount</th>
-
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @if (Model != null)
-                                    {
-                                        if (Model.payoutData != null)
-                                        {
-                                            if (Model.payoutData.Rows.Count > 0)
-                                            {
-                                                int j = 1;
-                                                for (int i = 0; i <= Model.payoutData.Rows.Count - 1; i++)
-                                                {
-                                                    <tr class="text-left">
-                                                        <td>@j</td>
-
-                                                        <td>@Model.payoutData.Rows[i]["LoginId"].ToString()</td>
-                                                        <td>@Model.payoutData.Rows[i]["FirstName"].ToString()</td>
-                                                        <td>@Model.payoutData.Rows[i]["PayoutNo"].ToString()</td>
-                                                        <td>@Model.payoutData.Rows[i]["ClosingDate"].ToString()</td>
-                                                        <td>@Model.payoutData.Rows[i]["DirectAmount"].ToString()</td>
-                                                        @if (Session["CommissionType"].ToString() == "Level")
-                                                        {
-                                                            <td>@Model.payoutData.Rows[i]["LevelIncome"].ToString()</td>
-                                                        }
-                                                        <td>@Model.payoutData.Rows[i]["DifferenceIncome"].ToString()</td>
-                                                        <td>@Model.payoutData.Rows[i]["OtherIncome"].ToString()</td>
-                                                        <td>@Model.payoutData.Rows[i]["GrossAmount"].ToString()</td>
-                                                        <td>@Model.payoutData.Rows[i]["TDSAmount"].ToString()</td>
-                                                        <td>@Model.payoutData.Rows[i]["AdminCharges"].ToString()</td>
-                                                        <td>@Model.payoutData.Rows[i]["NetAmount"].ToString()</td>
-                                                    </tr>
-                                                    j++;
-                                                }
-                                            }
-
-                                        }
-                                    }
-                                </tbody>
-                            </table>
-                        </div>
-
-                    </div>
+            <div class="row align-items-end">
+                <div class="col-xl-3 col-lg-3 col-md-6 col-sm-12 mb-3 mb-lg-0">
+                    <label class="form-label-modern">Payout No</label>
+                    @Html.TextBoxFor(m => m.PayoutNo, new { @class = "form-control form-control-modern", placeholder = "Enter Payout No", @onclick = "return isNumberOrDecimal(event);" })
+                </div>
+                <div class="col-xl-3 col-lg-3 col-md-6 col-sm-12 mb-3 mb-lg-0">
+                    <label class="form-label-modern">From Date</label>
+                    @Html.TextBoxFor(m => m.FromDate, new { @class = "form-control form-control-modern", placeholder = "DD/MM/YYYY", @readonly = "readonly" })
+                </div>
+                <div class="col-xl-3 col-lg-3 col-md-6 col-sm-12 mb-3 mb-lg-0">
+                    <label class="form-label-modern">To Date</label>
+                    @Html.TextBoxFor(m => m.Todate, new { @class = "form-control form-control-modern", placeholder = "DD/MM/YYYY", @readonly = "readonly" })
+                </div>
+                <div class="col-xl-3 col-lg-3 col-md-6 col-sm-12">
+                    <input type="submit" id="btnSearch" class="btn btn-search-modern w-100" name="Search" value="Search" />
                 </div>
             </div>
         </div>
-    </div>
-}
+
+        <!-- Modern Table Card -->
+        <div class="table-card">
+            <div class="table-responsive">
+                <table id="example23" class="table table-modern">
+                    <thead>
+                        <tr>
+                            <th>Sr No.</th>
+                            <th>Login Id</th>
+                            <th>First Name</th>
+                            <th>Payout No</th>
+                            <th>Closing Date</th>
+                            <th>Direct Income</th>
+                            @if (Session["CommissionType"] != null && Session["CommissionType"].ToString() == "Level")
+                            {
+                                <th>Level Income</th>
+                            }
+                            <th>Team Income</th>
+                            <th>Other Income</th>
+                            <th>Gross Amount</th>
+                            <th>TDS Amount</th>
+                            <th>Admin Charges</th>
+                            <th>NET Payable Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model != null && Model.payoutData != null && Model.payoutData.Rows.Count > 0)
+                        {
+                            int j = 1;
+                            for (int i = 0; i < Model.payoutData.Rows.Count; i++)
+                            {
+                                <tr>
+                                    <td class="font-weight-bold text-muted">@j</td>
+                                    <td><span class="badge badge-light border text-dark px-2 py-1">@Model.payoutData.Rows[i]["LoginId"].ToString()</span></td>
+                                    <td class="font-weight-bold text-dark">@Model.payoutData.Rows[i]["FirstName"].ToString()</td>
+                                    <td><span class="badge badge-primary px-2 py-1">#@Model.payoutData.Rows[i]["PayoutNo"].ToString()</span></td>
+                                    <td>@Model.payoutData.Rows[i]["ClosingDate"].ToString()</td>
+                                    <td class="font-weight-bold text-success">&#8377;@Model.payoutData.Rows[i]["DirectAmount"].ToString()</td>
+                                    @if (Session["CommissionType"] != null && Session["CommissionType"].ToString() == "Level")
+                                    {
+                                        <td class="font-weight-bold text-primary">&#8377;@Model.payoutData.Rows[i]["LevelIncome"].ToString()</td>
+                                    }
+                                    <td>&#8377;@Model.payoutData.Rows[i]["DifferenceIncome"].ToString()</td>
+                                    <td>&#8377;@Model.payoutData.Rows[i]["OtherIncome"].ToString()</td>
+                                    <td class="font-weight-bold text-dark">&#8377;@Model.payoutData.Rows[i]["GrossAmount"].ToString()</td>
+                                    <td class="text-danger">&#8377;@Model.payoutData.Rows[i]["TDSAmount"].ToString()</td>
+                                    <td class="text-warning">&#8377;@Model.payoutData.Rows[i]["AdminCharges"].ToString()</td>
+                                    <td><span class="badge badge-success px-3 py-2 font-weight-bold" style="font-size: 0.9rem;">&#8377;@Model.payoutData.Rows[i]["NetAmount"].ToString()</span></td>
+                                </tr>
+                                j++;
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="13" class="text-center py-4 text-muted font-weight-bold">
+                                    <i class="fas fa-info-circle mr-1 text-primary"></i> No payout records found for selected filters.
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+</div>
 
 <script src="../../Scripts/jquery-1.10.2.min.js"></script>
-
 <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
 <link rel="stylesheet" type="text/css" href="https://code.jquery.com/ui/1.12.0/themes/smoothness/jquery-ui.css">
 <script>
-
     $('#FromDate').datepicker({
-        dateFormat: 'dd/mm/yy',
+        dateFormat: 'dd/mm/yy'
     });
     $('#ToDate').datepicker({
-        dateFormat: 'dd/mm/yy',
+        dateFormat: 'dd/mm/yy'
     });
 </script>
-
-

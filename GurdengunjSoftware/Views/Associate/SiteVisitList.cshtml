@@ -1,0 +1,128 @@
+@using System.Data
+@{
+    ViewBag.Title = "Site Visit History";
+    Layout = "~/Views/Shared/Layout.cshtml";
+    DataTable dt = ViewBag.SiteVisitList as DataTable;
+}
+
+<div class="container-fluid pt-3">
+    <div class="row align-items-center mb-4">
+        <div class="col-sm-6">
+            <h3 class="font-weight-bold text-dark mb-0">Customer Plot/Site Visit Requests</h3>
+            <p class="text-muted small mb-0">Track all your submitted site visit requests, vehicle arrangements, and approval status.</p>
+        </div>
+        <div class="col-sm-6 text-right">
+            <a href="/Associate/SiteVisitRequest" class="btn btn-success btn-sm rounded-pill px-4 shadow-sm font-weight-bold">
+                <i class="fas fa-plus mr-1"></i> New Site Visit Request
+            </a>
+        </div>
+    </div>
+
+    @if (TempData["SiteVisitMsg"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fas fa-check-circle mr-2"></i> @TempData["SiteVisitMsg"]
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    }
+
+    <div class="card shadow-sm border-0 rounded-lg">
+        <div class="card-header bg-white py-3 border-bottom">
+            <h5 class="mb-0 font-weight-bold text-dark">
+                <i class="fas fa-history mr-2 text-primary"></i> Site Visit Status Directory
+            </h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0" id="example23">
+                    <thead class="bg-light text-muted">
+                        <tr>
+                            <th>S.No.</th>
+                            <th>Visit Date & Time</th>
+                            <th>Customer Info</th>
+                            <th>Site / Plot</th>
+                            <th>Persons</th>
+                            <th>Vehicle Needed</th>
+                            <th>Status</th>
+                            <th>Admin / Driver Remarks</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (dt != null && dt.Rows.Count > 0)
+                        {
+                            int i = 1;
+                            foreach (DataRow r in dt.Rows)
+                            {
+                                string status = r["Status"].ToString();
+                                string statusBadge = "badge-secondary";
+                                if (status == "Pending") { statusBadge = "badge-warning text-dark"; }
+                                else if (status == "Approved" || status == "Vehicle Assigned") { statusBadge = "badge-primary"; }
+                                else if (status == "Completed") { statusBadge = "badge-success"; }
+                                else if (status == "Cancelled") { statusBadge = "badge-danger"; }
+
+                                string visitDateStr = r["VisitDate"] != DBNull.Value ? Convert.ToDateTime(r["VisitDate"]).ToString("dd MMM yyyy, hh:mm tt") : "-";
+
+                                <tr>
+                                    <td>@i</td>
+                                    <td><strong class="text-dark">@visitDateStr</strong></td>
+                                    <td>
+                                        <div class="font-weight-bold text-dark">@r["CustomerName"]</div>
+                                        <small class="text-muted"><i class="fas fa-phone mr-1"></i> @r["CustomerMobile"]</small>
+                                    </td>
+                                    <td>
+                                        <div class="font-weight-bold text-primary">@(r["SiteName"] != DBNull.Value ? r["SiteName"] : "General")</div>
+                                        @if (r["PlotNumber"] != DBNull.Value && !string.IsNullOrEmpty(r["PlotNumber"].ToString()))
+                                        {
+                                            <small class="text-muted">Block: @(r["BlockName"] != DBNull.Value ? r["BlockName"] : "-") | Plot: @r["PlotNumber"]</small>
+                                        }
+                                    </td>
+                                    <td><span class="badge badge-light font-weight-bold px-2 py-1">@r["NumberOfPersons"] Person(s)</span></td>
+                                    <td>
+                                        @if (r["VehicleRequired"].ToString() == "Yes")
+                                        {
+                                            <span class="badge badge-info px-2 py-1"><i class="fas fa-car mr-1"></i> Cab Required</span>
+                                            if (r["PickupAddress"] != DBNull.Value && !string.IsNullOrEmpty(r["PickupAddress"].ToString()))
+                                            {
+                                                <div class="small text-muted mt-1" style="max-width: 180px;">@r["PickupAddress"]</div>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <span class="badge badge-light text-muted px-2 py-1">Self Vehicle</span>
+                                        }
+                                    </td>
+                                    <td><span class="badge @statusBadge px-3 py-2">@status</span></td>
+                                    <td>
+                                        @if (r["DriverDetails"] != DBNull.Value && !string.IsNullOrEmpty(r["DriverDetails"].ToString()))
+                                        {
+                                            <div class="small text-success font-weight-bold"><i class="fas fa-user-circle mr-1"></i> Driver: @r["DriverDetails"]</div>
+                                        }
+                                        @if (r["AdminRemarks"] != DBNull.Value && !string.IsNullOrEmpty(r["AdminRemarks"].ToString()))
+                                        {
+                                            <div class="small text-muted font-italic">@r["AdminRemarks"]</div>
+                                        }
+                                        @if ((r["DriverDetails"] == DBNull.Value || string.IsNullOrEmpty(r["DriverDetails"].ToString())) && (r["AdminRemarks"] == DBNull.Value || string.IsNullOrEmpty(r["AdminRemarks"].ToString())))
+                                        {
+                                            <span class="text-muted small">-</span>
+                                        }
+                                    </td>
+                                </tr>
+                                i++;
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="8" class="text-center py-4 text-muted">
+                                    <i class="fas fa-info-circle mr-1"></i> No site visit requests found. Click 'New Site Visit Request' to submit one.
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

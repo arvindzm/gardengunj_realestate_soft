@@ -3,6 +3,7 @@ using RealEstateRegalSpace.Models;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -16,44 +17,58 @@ namespace RealEstateRegalSpace.Controllers
     public class AdminController : AdminBaseController
     {
         // GET: Admin
-        public ActionResult DashBoard()
+        public ActionResult DashBoard(string siteId)
         {
             Dashboard obj = new Dashboard();
 
 
             DataSet ds = obj.GetAdminDashBoard();
-            if (ds != null)
-            {
-                if (ds.Tables[0].Rows.Count > 0)
-                {
-                    ViewBag.TotalAssociate = ds.Tables[0].Rows[0]["TotalAssociate"].ToString();
-                    ViewBag.TotalCustomer = ds.Tables[0].Rows[0]["TotalCustomer"].ToString();
-                    ViewBag.TotalBooking = ds.Tables[0].Rows[0]["TotalBooking"].ToString();
-                    ViewBag.TotalBusiness = ds.Tables[0].Rows[0]["TotalBusiness"].ToString();
-                    ViewBag.TotalInactiveAssociate = ds.Tables[0].Rows[0]["TotalInactiveAssociate"].ToString();
-                    ViewBag.TotalActiveAssociate = ds.Tables[0].Rows[0]["TotalActiveAssociate"].ToString();
-                    ViewBag.TotalLevelBusienss = ds.Tables[1].Rows[0]["TotalLevelBusienss"].ToString();
-                    ViewBag.TotalDirectBusiness = ds.Tables[2].Rows[0]["TotalDirectBusiness"].ToString();
-                    ViewBag.BookedArea = ds.Tables[3].Rows[0]["BookedArea"].ToString();
-                    ViewBag.AllotedArea = ds.Tables[4].Rows[0]["AllotedArea"].ToString();
-                    ViewBag.RegisteredArea = ds.Tables[5].Rows[0]["RegisteredArea"].ToString();
-                    ViewBag.MonthlyReturnBusiness= ds.Tables[0].Rows[0]["MonthlyReturnBusiness"].ToString();
-                    ViewBag.LongTermBusiness = ds.Tables[0].Rows[0]["LongTermBusiness"].ToString();
-                    ViewBag.TotalInvestmentBusiness = ds.Tables[0].Rows[0]["TotalInvestmentBusiness"].ToString();
 
-                    ViewBag.PendingDocument = ds.Tables[6].Rows[0]["PendingDocument"].ToString();
-
+            string GetSafeValue(DataTable dt, string colName) {
+                if (dt != null && dt.Rows.Count > 0 && dt.Columns.Contains(colName)) {
+                    string rawVal = dt.Rows[0][colName].ToString();
+                    decimal numVal = 0;
+                    if (decimal.TryParse(rawVal, out numVal) && numVal >= 1000) {
+                        return string.Format(new System.Globalization.CultureInfo("en-IN"), "{0:N2}", numVal);
+                    }
+                    return rawVal;
                 }
+                return "0";
+            }
+
+            if (ds != null && ds.Tables.Count > 0)
+            {
+                ViewBag.TotalAssociate = GetSafeValue(ds.Tables[0], "TotalAssociate");
+                ViewBag.TotalCustomer = GetSafeValue(ds.Tables[0], "TotalCustomer");
+                ViewBag.TotalBooking = GetSafeValue(ds.Tables[0], "TotalBooking");
+                ViewBag.TotalBusiness = GetSafeValue(ds.Tables[0], "TotalBusiness");
+                ViewBag.TotalInactiveAssociate = GetSafeValue(ds.Tables[0], "TotalInactiveAssociate");
+                ViewBag.TotalActiveAssociate = GetSafeValue(ds.Tables[0], "TotalActiveAssociate");
+                ViewBag.MonthlyReturnBusiness = GetSafeValue(ds.Tables[0], "MonthlyReturnBusiness");
+                ViewBag.LongTermBusiness = GetSafeValue(ds.Tables[0], "LongTermBusiness");
+                ViewBag.TotalInvestmentBusiness = GetSafeValue(ds.Tables[0], "TotalInvestmentBusiness");
+
+                if (ds.Tables.Count > 1) ViewBag.TotalLevelBusienss = GetSafeValue(ds.Tables[1], "TotalLevelBusienss");
+                if (ds.Tables.Count > 2) ViewBag.TotalDirectBusiness = GetSafeValue(ds.Tables[2], "TotalDirectBusiness");
+                if (ds.Tables.Count > 3) ViewBag.BookedArea = GetSafeValue(ds.Tables[3], "BookedArea");
+                if (ds.Tables.Count > 4) ViewBag.AllotedArea = GetSafeValue(ds.Tables[4], "AllotedArea");
+                if (ds.Tables.Count > 5) ViewBag.RegisteredArea = GetSafeValue(ds.Tables[5], "RegisteredArea");
+                if (ds.Tables.Count > 6) ViewBag.PendingDocument = GetSafeValue(ds.Tables[6], "PendingDocument");
+            }
                 
                 // Fetch Recent Bookings
                 Reports report = new Reports();
-                DataSet dsRecent = report.GetCollectionReport();
+                Plot plotModel = new Plot();
+                DataSet dsRecent = plotModel.GetBookingDetailsList();
                 if (dsRecent != null && dsRecent.Tables.Count > 0)
                 {
                     ViewBag.RecentBookings = dsRecent.Tables[0];
                 }
 
                 // Fetch Plot Count for Plot Status Overview
+                report.SiteID = siteId;
+                ViewBag.SiteID = siteId;
+
                 DataSet dsPlots = report.GetPlotCount();
                 if (dsPlots != null && dsPlots.Tables.Count > 0)
                 {
@@ -66,7 +81,29 @@ namespace RealEstateRegalSpace.Controllers
                 {
                     ViewBag.TopPerformers = dsPerformers.Tables[0];
                 }
-            }
+
+                // Fetch Associate Business for Chart
+                report.LoginId = null;
+                DataSet dsAssocBusiness = report.GetBusinessReport();
+                if (dsAssocBusiness != null && dsAssocBusiness.Tables.Count > 0)
+                {
+                    ViewBag.AssociateBusinessData = dsAssocBusiness.Tables[0];
+                }
+
+                // Add Site List for Dropdown
+                Master objM = new Master();
+                DataSet dsSite = objM.GetSiteList();
+                List<SelectListItem> ddlSite = new List<SelectListItem>();
+                ddlSite.Add(new SelectListItem { Text = "All Sites", Value = "" });
+                if (dsSite != null && dsSite.Tables.Count > 0)
+                {
+                    foreach (DataRow r in dsSite.Tables[0].Rows)
+                    {
+                        ddlSite.Add(new SelectListItem { Text = r["SiteName"].ToString(), Value = r["PK_SiteID"].ToString() });
+                    }
+                }
+                ViewBag.ddlSite = ddlSite;
+
             return View(obj);
         }
         public ActionResult BinaryTree()
@@ -1344,7 +1381,7 @@ namespace RealEstateRegalSpace.Controllers
                             {
                                 try
                                 {
-                                    string msg = "DEAR CUSTOMER,CONGRATULATION, YOU HAVE BOOKED A PLOT IN " + ds.Tables[0].Rows[0]["SiteName"].ToString() + " with plot no " + plot + ", WE ARE PLEASED TO WELCOME YOU IN GURDENGUNJ INFRATECH. BEST REGARDS TEAM GURDENGUNJ INFRATECH.Thankyou";
+                                    string msg = "DEAR CUSTOMER,CONGRATULATION, YOU HAVE BOOKED A PLOT IN " + ds.Tables[0].Rows[0]["SiteName"].ToString() + " with plot no " + plot + ", WE ARE PLEASED TO WELCOME YOU IN GARDENESTATE VENTURES. BEST REGARDS TEAM GARDENESTATE VENTURES.Thankyou";
                                     BLSMS.SendSMSNew(mob, msg);
 
 
@@ -1359,7 +1396,7 @@ namespace RealEstateRegalSpace.Controllers
                                 mob = "9795710000";
                                 try
                                 {
-                                    string msg = "DEAR CUSTOMER,CONGRATULATION, YOU HAVE BOOKED A PLOT IN " + ds.Tables[0].Rows[0]["SiteName"].ToString() + " with plot no " + plot + ", WE ARE PLEASED TO WELCOME YOU IN GURDENGUNJ INFRATECH. BEST REGARDS TEAM GURDENGUNJ INFRATECH.Thankyou";
+                                    string msg = "DEAR CUSTOMER,CONGRATULATION, YOU HAVE BOOKED A PLOT IN " + ds.Tables[0].Rows[0]["SiteName"].ToString() + " with plot no " + plot + ", WE ARE PLEASED TO WELCOME YOU IN GARDENESTATE VENTURES. BEST REGARDS TEAM GARDENESTATE VENTURES.Thankyou";
                                     BLSMS.SendSMSNew(mob, msg);
 
 
@@ -2458,6 +2495,23 @@ namespace RealEstateRegalSpace.Controllers
         public ActionResult HoldList()
         {
             Plot model = new Plot();
+            try
+            {
+                Connection.ExecuteNonQueryText("EXEC AutoExpireHoldPlots");
+
+                string query = @"SELECT H.PK_PlotHoldID, H.Fk_PlotId, H.PlotNumber, H.AssociateID, H.AssociateName, H.Name AS CustomerName, H.Mobile AS CustomerMobile, H.Remark, H.HoldFrom, H.HoldTo, ISNULL(H.HoldStatus, 'Pending') AS HoldStatus, S.SiteName, B.BlockName
+                                 FROM tblPlotHold H
+                                 LEFT JOIN tblSiteMaster S ON H.FK_SiteID = S.PK_SiteID
+                                 LEFT JOIN tblBlockMaster B ON H.FK_BlockID = B.PK_BlockID
+                                 ORDER BY H.PK_PlotHoldID DESC";
+                DataSet ds = Connection.ExecuteQueryText(query);
+                if (ds != null && ds.Tables.Count > 0)
+                {
+                    ViewBag.HoldList = ds.Tables[0];
+                }
+            }
+            catch (Exception) { }
+
             #region ddlSite
             int count1 = 0;
             List<SelectListItem> ddlSite = new List<SelectListItem>();
@@ -3069,7 +3123,7 @@ namespace RealEstateRegalSpace.Controllers
                 {
                     try
                     {
-                        string msg = "YOUR CHEQUE OF RS " + ds.Tables[0].Rows[0]["PaidAmount"].ToString() + "IS BOUNCE BY THE BANK PLEASE CONTACT GURDENGUNJ INFRATECH. Kindly login" + SoftwareDetails.Website + " Thankyou";
+                        string msg = "YOUR CHEQUE OF RS " + ds.Tables[0].Rows[0]["PaidAmount"].ToString() + "IS BOUNCE BY THE BANK PLEASE CONTACT GARDENESTATE VENTURES. Kindly login" + SoftwareDetails.Website + " Thankyou";
                         BLSMS.SendSMSNew(ds.Tables[0].Rows[0]["Mobile"].ToString(), msg);
                     }
                     catch { }
@@ -3574,13 +3628,13 @@ namespace RealEstateRegalSpace.Controllers
                             string mob = model.Contact;
                             try
                             {
-                                string msg = "Dear " + name + " Welcome to GURDENGUNJ INFRATECH.Your Login Id " + id + " and Password is " + pass + ". Kindly login" + SoftwareDetails.Website + " Thankyou";
+                                string msg = "Dear " + name + " Welcome to GARDENESTATE VENTURES.Your Login Id " + id + " and Password is " + pass + ". Kindly login" + SoftwareDetails.Website + " Thankyou";
                                 BLSMS.SendSMSNew(model.Contact, msg);
                             }
                             catch { }
                             try
                             {
-                                string msg = "Dear " + name + " Welcome to GURDENGUNJ INFRATECH.Your Login Id " + id + " and Password is " + pass + ". Kindly login" + SoftwareDetails.Website + " Thankyou";
+                                string msg = "Dear " + name + " Welcome to GARDENESTATE VENTURES.Your Login Id " + id + " and Password is " + pass + ". Kindly login" + SoftwareDetails.Website + " Thankyou";
                                 BLSMS.SendSMSNew("9795710000", msg);
                             }
                             catch { }
@@ -3788,14 +3842,13 @@ namespace RealEstateRegalSpace.Controllers
                     ViewBag.CustomerID = ds.Tables[0].Rows[0]["CustomerID"].ToString();
                     ViewBag.NetPlotAmountInWords = ds.Tables[0].Rows[0]["NetPlotAmountInWords"].ToString();
                     ViewBag.AmountInWords = ds.Tables[0].Rows[0]["AmountInWords"].ToString();
-                    ViewBag.ReceiptNo = ds.Tables[0].Rows[0]["ReceiptNo"].ToString();
+                    ViewBag.ReceiptNo = string.IsNullOrEmpty(ds.Tables[0].Rows[0]["ReceiptNo"].ToString()) ? newdata.PK_BookingDetailsId : ds.Tables[0].Rows[0]["ReceiptNo"].ToString();
                     ViewBag.CustomerName = ds.Tables[0].Rows[0]["CustomerName"].ToString();
                     ViewBag.Address = ds.Tables[0].Rows[0]["Address"].ToString();
                     ViewBag.AssociateName = ds.Tables[0].Rows[0]["AssociateName"].ToString();
                     ViewBag.CustomerContact = ds.Tables[0].Rows[0]["Mobile"].ToString();
                     ViewBag.RefrenceId = ds.Tables[0].Rows[0]["RefrenceId"].ToString();
                     ViewBag.UpadtedById = ds.Tables[0].Rows[0]["UpadtedById"].ToString();
-                    ViewBag.ReceiptNo = ds.Tables[0].Rows[0]["ReceiptNo"].ToString();
                     ViewBag.ProjectName = ds.Tables[0].Rows[0]["ProjectName"].ToString();
                     ViewBag.PlotNumber = ds.Tables[0].Rows[0]["PlotNumber"].ToString();
                     ViewBag.DepositeDate = ds.Tables[0].Rows[0]["DepositeDate"].ToString();
@@ -4134,11 +4187,43 @@ namespace RealEstateRegalSpace.Controllers
             return View(obj1);
         }
 
-        public ActionResult PlotList()
+        public ActionResult PlotList(string Status, string SiteID)
         {
             Master model = new Master();
-            DataSet ds = model.GetPlotList();
+            model.PlotStatus = Status;
+            model.SiteID = SiteID;
 
+            List<Master> lst = new List<Master>();
+            model.SiteID = string.IsNullOrEmpty(model.SiteID) || model.SiteID == "0" ? null : model.SiteID;
+            model.SectorID = null;
+            model.BlockID = null;
+            model.PLCName = null;
+            model.PlotID = null;
+            DataSet dsPlot = model.PlotReport();
+
+            if (dsPlot != null && dsPlot.Tables.Count > 0 && dsPlot.Tables[0].Rows.Count > 0)
+            {
+                foreach (DataRow r in dsPlot.Tables[0].Rows)
+                {
+                    Master obj = new Master();
+                    obj.PlotID = r["PK_PlotID"].ToString();
+                    obj.EncryptKey = Crypto.Encrypt(r["PK_PlotID"].ToString());
+                    obj.SiteName = r["SiteName"].ToString();
+                    obj.SectorName = r["SectorName"].ToString();
+                    obj.BlockName = r["BlockName"].ToString();
+                    obj.PlotNumber = r["PlotNumber"].ToString();
+                    obj.PlotArea = r["TotalArea"].ToString();
+                    obj.PlotRate = r["PlotRate"].ToString();
+                    obj.PlotAmount = r["PlotAmount"].ToString();
+                    obj.PLCCharge = r["PLCCharge"].ToString();
+                    obj.BookingPercent = r["BookingPercent"].ToString();
+                    obj.AllottmentPercent = (r["AllottmentPercent"].ToString());
+                    obj.PlotStatus = (r["PlotStatus"].ToString());
+                    obj.ColorCSS = (r["StatusColor"].ToString());
+                    lst.Add(obj);
+                }
+                model.lstPlot = lst;
+            }
 
             List<SelectListItem> ddlSector = new List<SelectListItem>();
             ddlSector.Add(new SelectListItem { Text = "Select Sector", Value = "0" });
@@ -4147,7 +4232,6 @@ namespace RealEstateRegalSpace.Controllers
             List<SelectListItem> ddlBlock = new List<SelectListItem>();
             ddlBlock.Add(new SelectListItem { Text = "Select Block", Value = "0" });
             ViewBag.ddlBlock = ddlBlock;
-
 
             #region ddlSite
             int count1 = 0;
@@ -4163,24 +4247,19 @@ namespace RealEstateRegalSpace.Controllers
                     }
                     ddlSite.Add(new SelectListItem { Text = r["SiteName"].ToString(), Value = r["PK_SiteID"].ToString() });
                     count1 = count1 + 1;
-
                 }
             }
             ViewBag.ddlSite = ddlSite;
             #endregion
+
             List<SelectListItem> ddlPLC = new List<SelectListItem>();
-            ds = model.PLCList();
+            DataSet dsPlc = model.PLCList();
             ddlPLC.Add(new SelectListItem { Text = "Select PLC", Value = "0" });
-            if (ds != null && ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
+            if (dsPlc != null && dsPlc.Tables.Count > 0 && dsPlc.Tables[0].Rows.Count > 0)
             {
-                foreach (DataRow r in ds.Tables[0].Rows)
+                foreach (DataRow r in dsPlc.Tables[0].Rows)
                 {
-
-
-
                     ddlPLC.Add(new SelectListItem { Text = r["PLCName"].ToString(), Value = r["PK_PLCId"].ToString() });
-
-
                 }
             }
             ViewBag.ddlPLC = ddlPLC;
@@ -4508,6 +4587,10 @@ namespace RealEstateRegalSpace.Controllers
         {
 
             Master obj = new Master();
+            #region ddlHeadtTyppe
+            List<SelectListItem> ddlHeadtTyppe = Common.BindHeadType();
+            ViewBag.ddlHeadtTyppe = ddlHeadtTyppe;
+            #endregion ddlHeadtTyppe
             #region ddlHead
             // int count1 = 0;
             List<SelectListItem> ddlHead = new List<SelectListItem>();
@@ -5639,7 +5722,7 @@ namespace RealEstateRegalSpace.Controllers
                             catch { }
                             try
                             {
-                                string msg = "Dear " + name + " Welcome to GURDENGUNJ INFRATECH.Your Login Id " + id + " and Password is " + pass + ". Kindly login" + SoftwareDetails.Website + " Thankyou";
+                                string msg = "Dear " + name + " Welcome to GARDENESTATE VENTURES.Your Login Id " + id + " and Password is " + pass + ". Kindly login" + SoftwareDetails.Website + " Thankyou";
                                 BLSMS.SendSMSNew("9795710000", msg);
                             }
                             catch { }
@@ -7367,5 +7450,161 @@ namespace RealEstateRegalSpace.Controllers
 
         }
 
+
+        [HttpGet]
+        public ActionResult PrintCustomerLedger(string id)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(id))
+                {
+                    return Content("Error: Plot ID is missing.");
+                }
+
+                Reports obj = new Reports();
+                obj.id = id;
+                DataSet ds = obj.CustomerLedger();
+
+                if (ds != null && ds.Tables.Count >= 3 && ds.Tables[0].Rows.Count > 0)
+                {
+                    ViewBag.Name = ds.Tables[0].Rows[0]["Name"].ToString();
+                    ViewBag.LoginId = ds.Tables[0].Rows[0]["LoginId"].ToString();
+                    ViewBag.SiteName = ds.Tables[0].Rows[0]["SiteName"].ToString();
+                    ViewBag.SectorName = ds.Tables[0].Rows[0]["SectorName"].ToString();
+                    ViewBag.BlockName = ds.Tables[0].Rows[0]["BlockName"].ToString();
+                    ViewBag.PlotNumber = ds.Tables[0].Rows[0]["PlotNumber"].ToString();
+                    ViewBag.TotalArea = ds.Tables[0].Rows[0]["TotalArea"].ToString();
+                    ViewBag.PlotRate = ds.Tables[0].Rows[0]["PlotRate"].ToString();
+                    ViewBag.PLCPerc = ds.Tables[0].Rows[0]["PLCPerc"].ToString();
+                    ViewBag.PlotAmount = ds.Tables[0].Rows[0]["PlotAmount"].ToString();
+                    ViewBag.NetPlotAmount = ds.Tables[0].Rows[0]["NetPlotAmount"].ToString();
+                    
+                    if (ds.Tables[2].Rows.Count > 0)
+                    {
+                        ViewBag.TotalPlotAmount = ds.Tables[2].Rows[0]["TotalPlotAmount"].ToString();
+                        ViewBag.TotalPaidAmount = ds.Tables[2].Rows[0]["TotalPaidAmount"].ToString();
+                        ViewBag.TotalBalance = (Convert.ToDecimal(ViewBag.TotalPlotAmount) - Convert.ToDecimal(ViewBag.TotalPaidAmount)).ToString("0.00");
+                    }
+                    else
+                    {
+                        ViewBag.TotalPlotAmount = "0";
+                        ViewBag.TotalPaidAmount = "0";
+                        ViewBag.TotalBalance = "0";
+                    }
+
+                    obj.paymentDetails = ds.Tables[1];
+                    return View("PrintLedger", obj);
+                }
+                else
+                {
+                    return Content("Error: No data found for this plot.");
+                }
+            }
+            catch (Exception ex)
+            {
+                return Content("Print Error: " + ex.Message);
+            }
+        }
+
+        public ActionResult PlotEnquiryList()
+        {
+            DataTable dt = new DataTable();
+            try
+            {
+                string query = "SELECT PK_EnquiryID, PlotNumber, SiteName, SectorName, BlockName, Name, Mobile, Message, EnquiryDate, Status FROM tblPlotEnquiry ORDER BY PK_EnquiryID DESC";
+                DataSet ds = Connection.ExecuteQueryText(query);
+                if (ds != null && ds.Tables.Count > 0)
+                {
+                    dt = ds.Tables[0];
+                }
+            }
+            catch (Exception) { }
+            ViewBag.EnquiryList = dt;
+            return View();
+        }
+
+        [HttpPost]
+        public JsonResult DeleteEnquiryAjax(long id)
+        {
+            try
+            {
+                SqlParameter[] para = { new SqlParameter("@ID", id) };
+                string query = "DELETE FROM tblPlotEnquiry WHERE PK_EnquiryID = @ID";
+                Connection.ExecuteNonQueryText(query, para);
+                return Json(new { Result = "1", Message = "Enquiry lead deleted successfully!" });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { Result = "0", Message = ex.Message });
+            }
+        }
+
+
+
+        [HttpPost]
+        public JsonResult ApproveRejectPlotHoldAjax(long holdId, string action)
+        {
+            try
+            {
+                SqlParameter[] para = {
+                    new SqlParameter("@PK_PlotHoldID", holdId),
+                    new SqlParameter("@Action", action ?? ""),
+                    new SqlParameter("@UpdatedBy", Session["Pk_AdminId"] != null ? Session["Pk_AdminId"].ToString() : "1")
+                };
+
+                DataSet ds = Connection.ExecuteQuery("ApproveRejectHoldPlot", para);
+                if (ds != null && ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
+                {
+                    return Json(new { Result = ds.Tables[0].Rows[0]["Msg"].ToString(), Message = ds.Tables[0].Rows[0]["ErrorMessage"].ToString() });
+                }
+                return Json(new { Result = "0", Message = "Could not process request." });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { Result = "0", Message = ex.Message });
+            }
+        }
+
+        public ActionResult SiteVisitList(string status = null, string siteId = null)
+        {
+            DataTable dt = SiteVisit.GetSiteVisits(associateUserId: null, status: status, siteId: siteId);
+            ViewBag.SiteVisitList = dt;
+            ViewBag.SelectedStatus = status;
+            ViewBag.SelectedSite = siteId;
+
+            Master objM = new Master();
+            DataSet dsSite = objM.GetSiteList();
+            List<SelectListItem> ddlSite = new List<SelectListItem>();
+            ddlSite.Add(new SelectListItem { Text = "All Sites / Projects", Value = "" });
+            if (dsSite != null && dsSite.Tables.Count > 0)
+            {
+                foreach (DataRow r in dsSite.Tables[0].Rows)
+                {
+                    ddlSite.Add(new SelectListItem { Text = r["SiteName"].ToString(), Value = r["PK_SiteID"].ToString() });
+                }
+            }
+            ViewBag.ddlSite = ddlSite;
+
+            return View();
+        }
+
+        [HttpPost]
+        public JsonResult UpdateSiteVisitStatusAjax(long visitId, string status, string adminRemarks, string driverDetails)
+        {
+            try
+            {
+                int rows = SiteVisit.UpdateVisitStatus(visitId, status, adminRemarks, driverDetails);
+                if (rows > 0)
+                {
+                    return Json(new { Result = "1", Message = "Site visit status updated successfully!" });
+                }
+                return Json(new { Result = "0", Message = "Failed to update visit status." });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { Result = "0", Message = ex.Message });
+            }
+        }
     }
 }
+

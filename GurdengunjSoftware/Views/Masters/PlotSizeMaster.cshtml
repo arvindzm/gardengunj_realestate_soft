@@ -53,40 +53,19 @@
                 </div>
             </div>
 
-            <div class="row mt-4">
-                <div class="col-sm-12 mb-3">
-                    <label class="font-weight-bold mr-3">Select Measurement Unit: </label>
-                    <div class="custom-control custom-radio custom-control-inline">
-                        <input type="radio" id="unitFt" name="UnitType" class="custom-control-input" value="Ft" checked onchange="toggleUnit()">
-                        <label class="custom-control-label" for="unitFt">Sq/Ft (Feet & Inches)</label>
-                    </div>
-                    <div class="custom-control custom-radio custom-control-inline">
-                        <input type="radio" id="unitMt" name="UnitType" class="custom-control-input" value="Mt" onchange="toggleUnit()">
-                        <label class="custom-control-label" for="unitMt">Sq/Mt (Meters)</label>
-                    </div>
-                    @Html.HiddenFor(m => m.UnitID)
-                </div>
-            </div>
+            <input type="hidden" id="UnitID" name="UnitID" value="1" />
 
             <div class="row mt-2">
                 <div class="col-sm-6">
                     <label class="font-weight-bold" id="lblWidthMain">Width (Feet) <span class="text-danger">*</span></label>
                     @Html.TextBoxFor(m => m.WidthFeet, new { @class = "form-control", @oninput = "calculatePlotArea()", @onkeypress = "return isNumberOrDecimal(event);", maxlength = "50", @placeholder = "0" })
-                    @Html.HiddenFor(m => m.WidthInch)
+                    <input type="hidden" id="WidthInch" name="WidthInch" value="0" />
                 </div>
-                @* <div class="col-sm-3 divInches">
-                    <label class="font-weight-bold">Width (Inches) <span class="text-danger">*</span></label>
-                    @Html.TextBoxFor(m => m.WidthInch, new { @class = "form-control", @oninput = "calculatePlotArea()", @onkeypress = "return isNumberOrDecimal(event);", maxlength = "50", @placeholder = "0" })
-                </div> *@
                 <div class="col-sm-6">
                     <label class="font-weight-bold" id="lblHeightMain">Height (Feet) <span class="text-danger">*</span></label>
                     @Html.TextBoxFor(m => m.HeightFeet, new { @class = "form-control", @oninput = "calculatePlotArea()", @onkeypress = "return isNumberOrDecimal(event);", maxlength = "50", @placeholder = "0" })
-                    @Html.HiddenFor(m => m.HeightInch)
+                    <input type="hidden" id="HeightInch" name="HeightInch" value="0" />
                 </div>
-                @* <div class="col-sm-3 divInches">
-                    <label class="font-weight-bold">Height (Inches) <span class="text-danger">*</span></label>
-                    @Html.TextBoxFor(m => m.HeightInch, new { @class = "form-control", @oninput = "calculatePlotArea()", @onkeypress = "return isNumberOrDecimal(event);", maxlength = "50", @placeholder = "0" })
-                </div> *@
             </div>
 
             <div class="row mt-3">
@@ -132,36 +111,9 @@
 
 <script>
     $(document).ready(function() {
-        // Initialize unit on load
-        if ($('#UnitID').val() == '2') {
-            $('#unitMt').prop('checked', true);
-        } else {
-            $('#unitFt').prop('checked', true);
-        }
-        toggleUnit();
-    });
-
-    function toggleUnit() {
-        var unit = $('input[name="UnitType"]:checked').val();
-        if (unit == "Mt") {
-            // $('.divInches').hide();
-            $('#lblWidthMain').text('Width (Meters)');
-            $('#lblHeightMain').text('Height (Meters)');
-            $('#areaUnitLabel').text('Sq/Mt');
-            $('#UnitID').val('2'); 
-            $('#WidthInch').val('0');
-            $('#HeightInch').val('0');
-        } else {
-            // $('.divInches').show();
-            $('#lblWidthMain').text('Width (Feet)');
-            $('#lblHeightMain').text('Height (Feet)');
-            $('#areaUnitLabel').text('Sq/Ft');
-            $('#UnitID').val('1'); 
-            $('#WidthInch').val('0');
-            $('#HeightInch').val('0');
-        }
+        // Initialize area on load if values exist
         calculatePlotArea();
-    }
+    });
 
     function calculatePlotArea() {
         var widthMain = Number($('#WidthFeet').val());

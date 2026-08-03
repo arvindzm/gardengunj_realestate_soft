@@ -1,0 +1,119 @@
+@model RealEstateRegalSpace.Models.SiteVisit
+
+@{
+    ViewBag.Title = "Site Visit Request";
+    Layout = "~/Views/Shared/Layout.cshtml";
+}
+
+<div class="container-fluid pt-3">
+    <div class="row align-items-center mb-4">
+        <div class="col-sm-6">
+            <h3 class="font-weight-bold text-dark mb-0">Customer Plot/Site Visit Request</h3>
+            <p class="text-muted small mb-0">Submit customer site visit details for company vehicle, driver & site coordinator arrangement.</p>
+        </div>
+        <div class="col-sm-6 text-right">
+            <a href="/Associate/SiteVisitList" class="btn btn-outline-primary btn-sm rounded-pill px-3">
+                <i class="fas fa-list mr-1"></i> View Visit History
+            </a>
+        </div>
+    </div>
+
+    @if (TempData["SiteVisitError"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fas fa-exclamation-circle mr-2"></i> @TempData["SiteVisitError"]
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    }
+
+    <div class="card shadow-sm border-0 rounded-lg">
+        <div class="card-header bg-white py-3 border-bottom">
+            <h5 class="mb-0 font-weight-bold text-primary">
+                <i class="fas fa-car-side mr-2"></i> Site Visit Entry Form
+            </h5>
+        </div>
+        <div class="card-body p-4">
+            @using (Html.BeginForm("SiteVisitRequest", "Associate", FormMethod.Post, new { id = "formSiteVisit" }))
+            {
+                <div class="row">
+                    <!-- Customer Details -->
+                    <div class="col-md-6 form-group mb-3">
+                        <label class="font-weight-bold text-dark">Customer Name <span class="text-danger">*</span></label>
+                        @Html.TextBoxFor(m => m.CustomerName, new { @class = "form-control", @placeholder = "Enter full name of customer", @required = "required" })
+                    </div>
+
+                    <div class="col-md-6 form-group mb-3">
+                        <label class="font-weight-bold text-dark">Customer Mobile <span class="text-danger">*</span></label>
+                        @Html.TextBoxFor(m => m.CustomerMobile, new { @class = "form-control", @placeholder = "10 digit mobile number", @required = "required", @type = "tel", @maxlength = "10" })
+                    </div>
+
+                    <!-- Site & Location -->
+                    <div class="col-md-4 form-group mb-3">
+                        <label class="font-weight-bold text-dark">Select Project / Site <span class="text-danger">*</span></label>
+                        @Html.DropDownListFor(m => m.SiteID, (IEnumerable<SelectListItem>)ViewBag.ddlSite, new { @class = "form-control", @required = "required" })
+                    </div>
+
+                    <div class="col-md-4 form-group mb-3">
+                        <label class="font-weight-bold text-dark">Block Name <small class="text-muted">(Optional)</small></label>
+                        @Html.TextBoxFor(m => m.BlockName, new { @class = "form-control", @placeholder = "e.g. Block A" })
+                    </div>
+
+                    <div class="col-md-4 form-group mb-3">
+                        <label class="font-weight-bold text-dark">Plot Number <small class="text-muted">(Optional)</small></label>
+                        @Html.TextBoxFor(m => m.PlotNumber, new { @class = "form-control", @placeholder = "e.g. 102" })
+                    </div>
+
+                    <!-- Date, Time & Logistics -->
+                    <div class="col-md-4 form-group mb-3">
+                        <label class="font-weight-bold text-dark">Proposed Visit Date & Time <span class="text-danger">*</span></label>
+                        @Html.TextBoxFor(m => m.VisitDate, new { @class = "form-control", @type = "datetime-local", @required = "required" })
+                    </div>
+
+                    <div class="col-md-4 form-group mb-3">
+                        <label class="font-weight-bold text-dark">Number of Visitors <span class="text-danger">*</span></label>
+                        @Html.TextBoxFor(m => m.NumberOfPersons, new { @class = "form-control", @type = "number", @min = "1", @value = "1", @required = "required" })
+                    </div>
+
+                    <div class="col-md-4 form-group mb-3">
+                        <label class="font-weight-bold text-dark">Company Cab / Vehicle Required? <span class="text-danger">*</span></label>
+                        <select name="VehicleRequired" id="VehicleRequired" class="form-control" onchange="togglePickup(this.value)">
+                            <option value="No">No (Self Vehicle / Customer arranged)</option>
+                            <option value="Yes">Yes (Company Cab Pickup Required)</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-12 form-group mb-3" id="pickupAddressGroup" style="display: none;">
+                        <label class="font-weight-bold text-dark">Pickup Location / Address <span class="text-danger">*</span></label>
+                        @Html.TextBoxFor(m => m.PickupAddress, new { @class = "form-control", @placeholder = "Full pickup address with landmark" })
+                    </div>
+
+                    <div class="col-md-12 form-group mb-3">
+                        <label class="font-weight-bold text-dark">Special Instructions / Remarks</label>
+                        @Html.TextAreaFor(m => m.Remarks, new { @class = "form-control", @rows = "3", @placeholder = "Enter any specific customer preferences or instructions for the site team" })
+                    </div>
+                </div>
+
+                <div class="text-right mt-3">
+                    <button type="reset" class="btn btn-light px-4 mr-2">Reset</button>
+                    <button type="submit" class="btn btn-success px-5 font-weight-bold shadow-sm">
+                        <i class="fas fa-paper-plane mr-2"></i> Submit Site Visit Request
+                    </button>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<script>
+    function togglePickup(val) {
+        if (val === 'Yes') {
+            document.getElementById('pickupAddressGroup').style.display = 'block';
+            document.getElementById('PickupAddress').setAttribute('required', 'required');
+        } else {
+            document.getElementById('pickupAddressGroup').style.display = 'none';
+            document.getElementById('PickupAddress').removeAttribute('required');
+        }
+    }
+</script>

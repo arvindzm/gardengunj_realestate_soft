@@ -190,7 +190,7 @@ namespace RealEstateRegalSpace.Models
         {
             SqlParameter[] para =
                             {
-                                        new SqlParameter("@CustomerId ",CustomerID),
+                                        new SqlParameter("@CustomerId",CustomerID),
                                         new SqlParameter("@AssociateId" , AssociateID),
                                         new SqlParameter("@Fk_PlanId" ,PaymentPlanID),
                                         new SqlParameter("@BookingDate"  ,BookingDate),
@@ -217,7 +217,7 @@ namespace RealEstateRegalSpace.Models
         {
             SqlParameter[] para =
                             {
-                                        new SqlParameter("@CustomerId ",CustomerID),
+                                        new SqlParameter("@CustomerId",CustomerID),
                                         new SqlParameter("@AssociateId" , AssociateID),
                                         new SqlParameter("@Fk_BranchId" , BranchID),
                                         new SqlParameter("@Fk_PlotId"  , PlotID),
@@ -253,7 +253,7 @@ namespace RealEstateRegalSpace.Models
         {
             SqlParameter[] para =
                             {
-                                        new SqlParameter("@CustomerId ",CustomerID),
+                                        new SqlParameter("@CustomerId",CustomerID),
                                         new SqlParameter("@AssociateId" , AssociateID),
                                         new SqlParameter("@Fk_BranchId" , BranchID),
                                         new SqlParameter("@Fk_PlotId"  , PlotID),

@@ -693,9 +693,10 @@ namespace RealEstateRegalSpace.Controllers
                 }
                 model.PlotArea = ds.Tables[0].Rows[0]["TotalArea"].ToString();
                 model.BookingPercent = ds.Tables[0].Rows[0]["BookingPercent"].ToString();
-                model.AllottmentPercent = ds.Tables[0].Rows[0]["AllottmentPercent"].ToString();
-                model.PlotID = ds.Tables[0].Rows[0]["PK_PlotID"].ToString(); 
-                model.dtPLC = ds.Tables[1];
+                if (ds.Tables.Count > 1)
+                {
+                    model.dtPLC = ds.Tables[1];
+                }
 
             }
             else
@@ -1001,8 +1002,10 @@ namespace RealEstateRegalSpace.Controllers
 
 
             DataSet dqs = model.GetPlotList();
-
-            model.dtPLC = dqs.Tables[1];
+            if (dqs != null && dqs.Tables.Count > 1)
+            {
+                model.dtPLC = dqs.Tables[1];
+            }
             return View(model);
         }
 

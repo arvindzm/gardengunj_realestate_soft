@@ -197,7 +197,7 @@
                 alert("Please select a plot first by clicking 'View Statement' to print its ledger.");
                 return false;
             }
-            window.open('/Print/CustomerLedger?id=' + bookingId, '_blank');
+            window.open('/Admin/PrintCustomerLedger?id=' + bookingId, '_blank');
         }
 
         function validatePrint() {
@@ -240,9 +240,9 @@
                                 '<td class="text-center small">' + data.details[i].TransactionDate + '</td>' +
                                 '<td class="small">' + data.details[i].Particular + '</td>' +
                                 '<td class="small">' + data.details[i].CreditTo + '</td>' +
-                                '<td class="text-right text-info">₹ ' + data.details[i].NetPlotAmount + '</td>' +
-                                '<td class="text-right text-success font-weight-bold">₹ ' + data.details[i].PaidAmount + '</td>' +
-                                '<td class="text-right font-weight-bold text-dark">₹ ' + data.details[i].Balance + '</td>' +
+                                '<td class="text-right text-info">&#8377; ' + data.details[i].NetPlotAmount + '</td>' +
+                                '<td class="text-right text-success font-weight-bold">&#8377; ' + data.details[i].PaidAmount + '</td>' +
+                                '<td class="text-right font-weight-bold text-dark">&#8377; ' + data.details[i].Balance + '</td>' +
                                 '</tr>';
                             tableBody.append(row);
                         }
@@ -250,9 +250,9 @@
                         var footer = '<tfoot class="bg-light font-weight-bold">' +
                             '<tr>' +
                             '<td colspan="3" class="text-right py-3">Total Summary:</td>' +
-                            '<td class="text-right text-info py-3">₹ ' + data.TotalPlotAmount + '</td>' +
-                            '<td class="text-right text-success py-3">₹ ' + data.TotalPaidAmount + '</td>' +
-                            '<td class="text-right text-danger py-3">₹ ' + data.TotalBalance + '</td>' +
+                            '<td class="text-right text-info py-3">&#8377; ' + data.TotalPlotAmount + '</td>' +
+                            '<td class="text-right text-success py-3">&#8377; ' + data.TotalPaidAmount + '</td>' +
+                            '<td class="text-right text-danger py-3">&#8377; ' + data.TotalBalance + '</td>' +
                             '</tr></tfoot>';
                         $('#example231').append(footer);
                     }

@@ -264,14 +264,14 @@ namespace RealEstateRegalSpace.Models
 
         public class SoftwareDetails
         {
-            public static string CompanyName = "Gurdengunj Infratech";
+            public static string CompanyName = "GARDENESTATE VENTURES";
             public static string CompanyAddress = "Bh, Lucknow";
             public static string Pin1 = "226005";
             public static string State1 = "Uttar Pradesh";
             public static string City1 = "Lucknow";
             public static string ContactNo = "0522 0000000000";
-            public static string Website = "Gurdengunj.com";
-            public static string EmailID = "gurdengunj@gmail.com";
+            public static string Website = "gardenestateventures.com";
+            public static string EmailID = "gardenestateventures@gmail.com";
         }
 
 
@@ -280,3 +280,5 @@ namespace RealEstateRegalSpace.Models
 
 
 }
+
+

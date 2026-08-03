@@ -479,10 +479,9 @@ namespace RealEstateRegalSpace.Models
         public DataSet GetPlotCount()
         {
             SqlParameter[] para = {
-                                  
-                                         new SqlParameter("@SiteID", SiteID),
-                                       
-
+                new SqlParameter("@SiteID", SiteID),
+                new SqlParameter("@SectorID", SectorID),
+                new SqlParameter("@BlockID", BlockID),
             };
             DataSet ds = Connection.ExecuteQuery("GetPlotCount", para);
             return ds;

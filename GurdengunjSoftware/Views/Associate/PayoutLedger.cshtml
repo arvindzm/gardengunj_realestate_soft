@@ -1,190 +1,198 @@
 @model RealEstateRegalSpace.Models.Reports
 
 @{
-    ViewBag.Title = "PayoutLedger";
+    ViewBag.Title = "Payout Ledger";
     Layout = "~/Views/Shared/Layout.cshtml";
 }
 
-@using (Html.BeginForm("PayoutLedger", "Associate", FormMethod.Post, new { @id = "form1", enctype = "multipart/form-data" }))
-{
-    <div class="wrapper">
-        <div class="container-fluid">
+<style>
+    .associate-page-title {
+        font-size: 1.75rem;
+        font-weight: 800;
+        color: #1e293b;
+        margin-bottom: 1.5rem;
+    }
+    .profile-card {
+        background: #ffffff;
+        border-radius: 16px;
+        border: none;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+        padding: 24px;
+        margin-bottom: 24px;
+    }
+    .info-label {
+        font-weight: 600;
+        font-size: 0.825rem;
+        color: #64748b;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 4px;
+    }
+    .info-value-modern {
+        background: #f8fafc;
+        border-radius: 10px;
+        border: 1px solid #e2e8f0;
+        padding: 10px 14px;
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: #0f172a;
+        margin-bottom: 16px;
+    }
+    .table-card {
+        background: #ffffff;
+        border-radius: 16px;
+        border: none;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+        overflow: hidden;
+    }
+    .table-modern {
+        width: 100%;
+        margin-bottom: 0;
+    }
+    .table-modern thead {
+        background: #f8fafc;
+        border-bottom: 2px solid #e2e8f0;
+    }
+    .table-modern thead th {
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: #475569;
+        padding: 14px 16px;
+        border: none;
+        white-space: nowrap;
+    }
+    .table-modern tbody tr {
+        border-bottom: 1px solid #f1f5f9;
+        transition: background-color 0.15s ease;
+    }
+    .table-modern tbody tr:hover {
+        background-color: #f8fafc;
+    }
+    .table-modern tbody td {
+        padding: 14px 16px;
+        font-size: 0.9rem;
+        color: #334155;
+        vertical-align: middle;
+        white-space: nowrap;
+    }
+</style>
 
-            <div class="card-block">
+<div class="container-fluid pt-3">
+    <h2 class="associate-page-title">Payout Ledger</h2>
 
-                <!-- Page-Title -->
-                <div class="page-title-box">
-                    <div class="row align-items-center">
-                        <div class="col-sm-6">
-                            <h4 class="page-title">Payout Ledger</h4>
-                        </div>
-                       
+    @using (Html.BeginForm("PayoutLedger", "Associate", FormMethod.Post, new { @id = "form1", enctype = "multipart/form-data" }))
+    {
+        if (Model != null && Model.lstDetails != null && Model.lstDetails.Rows.Count > 0)
+        {
+            var r = Model.lstDetails.Rows[0];
+            <!-- Associate Profile Card -->
+            <div class="profile-card">
+                <div class="row">
+                    <div class="col-xl-3 col-lg-3 col-md-4 col-sm-6">
+                        <div class="info-label">Associate Name</div>
+                        <div class="info-value-modern text-primary">@r["Name"].ToString()</div>
                     </div>
-                    <!-- end row -->
-                </div>
-                <div class="form-group row">
-                    <div class="col-lg-12">
-
-                        <div class="row gutters">
-                            @*id="printableArea"*@
-                            @if (Model != null)
-                            {
-                                if (Model.lstDetails != null)
-                                {
-                                    if (Model.lstDetails.Rows.Count > 0)
-                                    {
-                                        <div class="col-sm-4">
-                                            Name
-                                            <input type="text" class="form-control" readonly="readonly" value="@Model.lstDetails.Rows[0]["Name"].ToString()" style="color:blue" />
-                                        </div>
-                                        <div class="col-sm-4">
-                                            Relation
-
-                                            <input type="text" class="form-control" readonly="readonly" value="@Model.lstDetails.Rows[0]["FathersName"].ToString()" style="color:blue" />
-                                        </div>
-                                        <div class="col-sm-4">
-                                            Mobile
-                                            <input type="text" class="form-control" readonly="readonly" value="@Model.lstDetails.Rows[0]["Mobile"].ToString()" style="color:blue" />
-                                        </div>
-                                        <div class="col-sm-4">
-                                            Adhar Number
-                                            <input type="text" class="form-control" readonly="readonly" value="@Model.lstDetails.Rows[0]["AdharNumber"].ToString()" style="color:blue" />
-
-                                        </div>
-                                        <div class="col-sm-4">
-                                            Pan
-                                            <input type="text" class="form-control" readonly="readonly" value="@Model.lstDetails.Rows[0]["PanNumber"].ToString()" style="color:blue" />
-                                        </div>
-                                        <div class="col-sm-4">
-                                            Acc No
-                                            <input type="text" class="form-control" readonly="readonly" value="@Model.lstDetails.Rows[0]["MemberAccNo"].ToString()" style="color:blue" />
-
-                                        </div>
-                                        <div class="col-sm-4">
-                                            Bank Name
-                                            <input type="text" class="form-control" readonly="readonly" value="@Model.lstDetails.Rows[0]["MemberBankName"].ToString()" style="color:blue" />
-
-                                        </div>
-                                        <div class="col-sm-4">
-                                            Branch
-                                            <input type="text" class="form-control" readonly="readonly" value="@Model.lstDetails.Rows[0]["MemberBranch"].ToString()" style="color:blue" />
-
-                                        </div>
-                                        <div class="col-sm-4">
-                                            IFSC
-                                            <input type="text" class="form-control" readonly="readonly" value="@Model.lstDetails.Rows[0]["IFSCCode"].ToString()" style="color:blue" />
-
-                                        </div>
-                                        <div class="col-sm-4">
-                                            Advance
-                                            <input type="text" class="form-control" readonly="readonly" value="@ViewBag.AdvancePayment" style="color:blue" />
-
-                                        </div>
-                                    }
-                                }
-                            }
-
-
-
-                        </div>
-
-                        <div class="row gutters table-responsive">
-                            <table id="example25" class="table table-bordered">
-                                <thead>
-                                    <tr>
-                                        <th>Sr No.</th>
-                                        <th>TransactionDate</th>
-                                        <th>Particular</th>
-                                        <th>Mode</th>
-                                        <th>Transaction No</th>
-                                        <th>Credit</th>
-                                        <th>Debit</th>
-                                        <th>Balance</th>
-
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @if (Model != null)
-                                    {
-                                        if (Model.customerLedger != null)
-                                        {
-                                            if (Model.customerLedger.Rows.Count > 0)
-                                            {
-                                                int j = 1;
-                                                for (int i = 0; i <= Model.customerLedger.Rows.Count - 1; i++)
-                                                {
-                                                    <tr class="text-left">
-                                                        <td>@j</td>
-
-                                                        <td>@Model.customerLedger.Rows[i]["TransactionDate"].ToString()</td>
-                                                        <td>
-                                                            <div class="row">
-                                                                <div class="col-md-6">
-                                                                    @Model.customerLedger.Rows[i]["Particular"].ToString()
-                                                                </div>
-                                                                <div class="col-md-6">
-                                                                    <b style="color:blue"> @Model.customerLedger.Rows[i]["CrAmount1"].ToString()</b>
-                                                                </div>
-                                                            </div>
-                                                            @if (Model.customerLedger.Rows[i]["Particular"].ToString().Contains("Gross Payout"))
-                                                            {
-                                                                <div class="row">
-                                                                    <div class="col-md-6">
-                                                                        TDS (5 %)
-                                                                    </div>
-                                                                    <div class="col-md-6">
-                                                                        <b style="color:red"> @Model.customerLedger.Rows[i]["Charges"].ToString() </b>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="row">
-                                                                    <div class="col-md-6">
-                                                                        Processing (5 %)
-                                                                    </div>
-                                                                    <div class="col-md-6">
-                                                                        <b style="color:red"> @Model.customerLedger.Rows[i]["Charges"].ToString() </b>
-                                                                    </div>
-                                                                </div>
-
-                                                            }
-
-                                                        </td>
-                                                        <td>@Model.customerLedger.Rows[i]["Mode"].ToString()</td>
-                                                        <td>@Model.customerLedger.Rows[i]["TransactionNo"].ToString()</td>
-                                                        <td>
-                                                            @Model.customerLedger.Rows[i]["CrAmount"].ToString()
-
-                                                        </td>
-                                                        <td>@Model.customerLedger.Rows[i]["DrAmount"].ToString()</td>
-                                                        <td>@Model.customerLedger.Rows[i]["Balance"].ToString()</td>
-                                                    </tr>
-                                                    j++;
-                                                }
-                                            }
-
-                                        }
-                                    }
-                                </tbody>
-                            </table>
-                        </div>
-
+                    <div class="col-xl-3 col-lg-3 col-md-4 col-sm-6">
+                        <div class="info-label">Guardian / Relation</div>
+                        <div class="info-value-modern">@r["FathersName"].ToString()</div>
+                    </div>
+                    <div class="col-xl-3 col-lg-3 col-md-4 col-sm-6">
+                        <div class="info-label">Mobile Number</div>
+                        <div class="info-value-modern">@r["Mobile"].ToString()</div>
+                    </div>
+                    <div class="col-xl-3 col-lg-3 col-md-4 col-sm-6">
+                        <div class="info-label">Aadhaar Number</div>
+                        <div class="info-value-modern">@r["AdharNumber"].ToString()</div>
+                    </div>
+                    <div class="col-xl-3 col-lg-3 col-md-4 col-sm-6">
+                        <div class="info-label">PAN Number</div>
+                        <div class="info-value-modern">@r["PanNumber"].ToString()</div>
+                    </div>
+                    <div class="col-xl-3 col-lg-3 col-md-4 col-sm-6">
+                        <div class="info-label">Account Number</div>
+                        <div class="info-value-modern">@r["MemberAccNo"].ToString()</div>
+                    </div>
+                    <div class="col-xl-3 col-lg-3 col-md-4 col-sm-6">
+                        <div class="info-label">Bank & Branch</div>
+                        <div class="info-value-modern">@r["MemberBankName"].ToString() (@r["MemberBranch"].ToString())</div>
+                    </div>
+                    <div class="col-xl-3 col-lg-3 col-md-4 col-sm-6">
+                        <div class="info-label">IFSC Code</div>
+                        <div class="info-value-modern">@r["IFSCCode"].ToString()</div>
                     </div>
                 </div>
             </div>
+        }
+
+        <!-- Modern Table Card -->
+        <div class="table-card">
+            <div class="table-responsive">
+                <table id="example25" class="table table-modern">
+                    <thead>
+                        <tr>
+                            <th>Sr No.</th>
+                            <th>Date</th>
+                            <th>Particulars</th>
+                            <th>Mode</th>
+                            <th>Transaction No</th>
+                            <th class="text-right">Credit</th>
+                            <th class="text-right">Debit</th>
+                            <th class="text-right">Balance</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model != null && Model.customerLedger != null && Model.customerLedger.Rows.Count > 0)
+                        {
+                            int j = 1;
+                            for (int i = 0; i < Model.customerLedger.Rows.Count; i++)
+                            {
+                                <tr>
+                                    <td class="font-weight-bold text-muted">@j</td>
+                                    <td>@Model.customerLedger.Rows[i]["TransactionDate"].ToString()</td>
+                                    <td>
+                                        <div class="font-weight-bold text-dark">@Model.customerLedger.Rows[i]["Particular"].ToString()</div>
+                                        @if (Model.customerLedger.Rows[i]["Particular"].ToString().Contains("Gross Payout"))
+                                        {
+                                            <div class="small text-muted mt-1">
+                                                <span>TDS: <b class="text-danger">&#8377;@Model.customerLedger.Rows[i]["Charges"].ToString()</b></span> | 
+                                                <span>Processing: <b class="text-danger">&#8377;@Model.customerLedger.Rows[i]["Charges"].ToString()</b></span>
+                                            </div>
+                                        }
+                                    </td>
+                                    <td><span class="badge badge-light border text-dark px-2 py-1">@Model.customerLedger.Rows[i]["Mode"].ToString()</span></td>
+                                    <td class="font-weight-bold">@Model.customerLedger.Rows[i]["TransactionNo"].ToString()</td>
+                                    <td class="text-right font-weight-bold text-success">&#8377;@Model.customerLedger.Rows[i]["CrAmount"].ToString()</td>
+                                    <td class="text-right font-weight-bold text-danger">&#8377;@Model.customerLedger.Rows[i]["DrAmount"].ToString()</td>
+                                    <td class="text-right font-weight-bold text-primary">&#8377;@Model.customerLedger.Rows[i]["Balance"].ToString()</td>
+                                </tr>
+                                j++;
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="8" class="text-center py-4 text-muted font-weight-bold">
+                                    <i class="fas fa-info-circle mr-1 text-primary"></i> No payout ledger transactions found.
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
         </div>
-    </div>
-}
+    }
+</div>
 
 <script src="../../Scripts/jquery-1.10.2.min.js"></script>
-
 <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
 <link rel="stylesheet" type="text/css" href="https://code.jquery.com/ui/1.12.0/themes/smoothness/jquery-ui.css">
 <script>
-
     $('#FromDate').datepicker({
-        dateFormat: 'dd/mm/yy',
+        dateFormat: 'dd/mm/yy'
     });
     $('#ToDate').datepicker({
-        dateFormat: 'dd/mm/yy',
+        dateFormat: 'dd/mm/yy'
     });
 </script>
-

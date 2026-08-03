@@ -11,7 +11,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>Plot Availability | Gurdengunj Infratech</title>
+    <title>Plot Availability | GARDENESTATE VENTURES</title>
 
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -27,8 +27,8 @@
             --bg-light: #f0f2f5;
             --available: #28a745;
             --hold: #ffc107;
-            --booked: #e83e8c;
-            --allotted: #dc3545;
+            --booked: #007bff;
+            --registry: #dc3545;
             --border-radius: 20px;
             --box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
             --transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
@@ -84,7 +84,7 @@
         }
 
         .filter-section {
-            padding: 40px;
+            padding: 20px;
             background: #fff;
             border-bottom: 1px solid #edf2f7;
         }
@@ -160,11 +160,76 @@
         .bg-available { background: var(--available); }
         .bg-hold { background: var(--hold); }
         .bg-booked { background: var(--booked); }
-        .bg-allotted { background: var(--allotted); }
+        .bg-registry { background: var(--registry); }
+        .bg-cancelled { background: #6f42c1; }
+
+        .status-overview-section {
+            padding: 0 40px 30px 40px;
+            background: #fff;
+        }
+
+        .summary-card {
+            background: #fff;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            transition: var(--transition);
+            border: 1px solid #edf2f7;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .summary-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+            border-color: var(--primary-color);
+        }
+
+        .summary-card i {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            opacity: 0.8;
+        }
+
+        .summary-value {
+            font-size: 1.8rem;
+            font-weight: 800;
+            line-height: 1;
+            margin-bottom: 5px;
+        }
+
+        .summary-label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .card-indicator {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+        }
+
+        .bg-total { background: #64748b; color: #64748b; }
+        .bg-available-light { background: var(--available); color: var(--available); }
+        .bg-hold-light { background: var(--hold); color: var(--hold); }
+        .bg-booked-light { background: var(--booked); color: var(--booked); }
+        .bg-registry-light { background: var(--registry); color: var(--registry); }
+        .bg-cancelled-light { background: #6f42c1; color: #6f42c1; }
+        .text-cancelled { color: #6f42c1 !important; }
 
         .plot-container {
-            padding: 50px 40px;
-            min-height: 450px;
+            padding: 20px 20px 20px 20px;
+    min-height: 450px;
         }
 
         .block-header {
@@ -202,8 +267,7 @@
             transition: var(--transition);
             text-decoration: none !important;
             border: 2px solid rgba(255,255,255,0.2);
-            opacity: 0;
-            animation: scaleIn 0.5s ease-out forwards;
+            opacity: 1;
         }
 
         .plot-box i { font-size: 0.75rem; margin-top: 5px; opacity: 0.8; }
@@ -216,9 +280,9 @@
         }
 
         .plot-box.available { background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%); }
-        .plot-box.booked { background: linear-gradient(135deg, #e83e8c 0%, #b11d5a 100%); }
+        .plot-box.booked { background: linear-gradient(135deg, #007bff 0%, #0056b3 100%); }
         .plot-box.hold { background: linear-gradient(135deg, #ffc107 0%, #d39e00 100%); color: #1a202c; }
-        .plot-box.allotted { background: linear-gradient(135deg, #dc3545 0%, #bd2130 100%); }
+        .plot-box.registry { background: linear-gradient(135deg, #dc3545 0%, #bd2130 100%); }
 
         /* Side Detail Panel */
         .detail-panel {
@@ -318,11 +382,13 @@
         @@media (max-width: 768px) {
             .detail-panel { width: 100%; right: -100%; }
             .plot-box { width: 60px; height: 55px; }
-              .plot-grid {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 5px !important;
-        }
+            .plot-grid {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 5px !important;
+            }
+            .status-overview-section { padding: 0 20px 20px 20px; }
+            .summary-card { margin-bottom: 15px; }
         }
     </style>
 </head>
@@ -347,6 +413,7 @@
             <div class="info-card">
                 <span class="info-label">Property Dimensions</span>
                 <div class="info-value"><i class="fas fa-vector-square"></i> <span id="panelArea">---</span></div>
+                <div class="info-value mt-2"><i class="fas fa-ruler-combined"></i> Size: <span id="panelSize">---</span></div>
                 <div class="info-value mt-2"><i class="fas fa-cube"></i> <span id="panelBlock">---</span></div>
             </div>
 
@@ -363,6 +430,14 @@
                 <div class="info-value text-muted"><i class="fas fa-star"></i> <span id="panelPLC">N/A</span></div>
             </div>
         </div>
+        
+        <div class="panel-footer p-3 bg-white border-top shadow-lg" id="panelActions" style="display: none; flex-shrink: 0;">
+            <button type="button" class="btn btn-warning btn-block font-weight-bold shadow-sm py-2 text-dark mb-2" onclick="openHoldModal()" style="border-radius: 8px;">
+                <i class="fas fa-lock mr-1"></i> Hold Plot </button>
+            <button type="button" class="btn btn-outline-primary btn-block font-weight-bold shadow-sm py-2" onclick="openEnquiryModal()" style="border-radius: 8px;">
+                <i class="fas fa-paper-plane mr-1"></i> inquiry About Plot
+            </button>
+        </div>
     </div>
 
     @using (Html.BeginForm("PlotAvailbility", "Home", FormMethod.Post, new { @id = "form1" }))
@@ -373,7 +448,7 @@
                     <a href="/">
                         <img src="/files/assets/images/logo.png" alt="Logo" />
                     </a>
-                    <h2><i class="fas fa-th mr-2"></i> Plot Inventory Matrix</h2>
+                    <h2>Plot Inventory </h2>
                 </div>
 
                 <div class="filter-section">
@@ -397,7 +472,7 @@
                                 <option value="A">Available</option>
                                 <option value="H">On Hold</option>
                                 <option value="B">Booked</option>
-                                <option value="AL">Allotted</option>
+                                <option value="AL">Registry</option>
                             </select>
                         </div>
                     </div>
@@ -410,51 +485,204 @@
                     </div>
                 </div>
 
+                <div class="status-overview-section">
+                    <div class="row justify-content-center">
+                         @{
+                             var plotStats = ViewBag.PlotStats as System.Data.DataTable;
+                             int totalPlots = 0, available = 0, booked = 0, onHold = 0, registry = 0, cancelled = 0;
+
+                             if (plotStats != null && plotStats.Rows.Count > 0)
+                             {
+                                 foreach (System.Data.DataRow row in plotStats.Rows)
+                                 {
+                                     totalPlots += plotStats.Columns.Contains("TotalPlots") ? Convert.ToInt32(row["TotalPlots"]) : 0;
+                                     available += plotStats.Columns.Contains("AvailablePlots") ? Convert.ToInt32(row["AvailablePlots"]) : 0;
+                                     booked += plotStats.Columns.Contains("BookedPlots") ? Convert.ToInt32(row["BookedPlots"]) : 0;
+                                     onHold += plotStats.Columns.Contains("HoldPlots") ? Convert.ToInt32(row["HoldPlots"]) : 0;
+                                     registry += plotStats.Columns.Contains("RegisteredPlots") ? Convert.ToInt32(row["RegisteredPlots"]) : 0;
+                                     cancelled += plotStats.Columns.Contains("CancelledPlots") ? Convert.ToInt32(row["CancelledPlots"]) : 0;
+                                 }
+                             }
+                         }
+                         <div class="col-6 col-md-2 mb-3">
+                            <div class="summary-card">
+                                <i class="fas fa-layer-group text-muted"></i>
+                                <div class="summary-value">
+                                    @{
+                                        int displayTotal = (Model != null && Model.lstPlot != null && Model.lstPlot.Count > 0) ? Model.lstPlot.Count : totalPlots;
+                                    }
+                                    @displayTotal
+                                </div>
+                                <div class="summary-label">Total</div>
+                                <div class="card-indicator bg-total"></div>
+                            </div>
+                        </div>
+                         @{
+                             int localAvailable = 0, localBooked = 0, localOnHold = 0, localRegistry = 0, localCancelled = 0;
+                             if (Model != null && Model.lstPlot != null && Model.lstPlot.Count > 0)
+                             {
+                                 foreach (var plot in Model.lstPlot)
+                                 {
+                                     if (plot.PlotStatus == "Available") { localAvailable++; }
+                                     else if (plot.PlotStatus == "Hold") { localOnHold++; }
+                                     else if (plot.PlotStatus == "Cancelled") { localCancelled++; }
+
+                                     // Count all sold/booked plots
+                                     if (plot.PlotStatus == "Booked" || plot.PlotStatus == "Allotted" || plot.PlotStatus == "Registry" || plot.PlotStatus == "Registered")
+                                     {
+                                         localBooked++;
+                                     }
+
+                                     // Specifically count registry/allotted plots
+                                     if (plot.PlotStatus == "Allotted" || plot.PlotStatus == "Registry" || plot.PlotStatus == "Registered")
+                                     {
+                                         localRegistry++;
+                                     }
+                                 }
+                             }
+                             else
+                             {
+                                 localAvailable = available;
+                                 localBooked = booked;
+                                 localOnHold = onHold;
+                                 localRegistry = registry;
+                                 localCancelled = cancelled;
+                             }
+                         }
+                        <div class="col-6 col-md-2 mb-3">
+                            <div class="summary-card">
+                                <i class="fas fa-check-circle text-success"></i>
+                                <div class="summary-value">@localAvailable</div>
+                                <div class="summary-label">Available</div>
+                                <div class="card-indicator bg-available-light"></div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-2 mb-3">
+                            <div class="summary-card">
+                                <i class="fas fa-clock text-warning"></i>
+                                <div class="summary-value">@localOnHold</div>
+                                <div class="summary-label">On Hold</div>
+                                <div class="card-indicator bg-hold-light"></div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-2 mb-3">
+                            <div class="summary-card">
+                                <i class="fas fa-lock text-primary"></i>
+                                <div class="summary-value">@localBooked</div>
+                                <div class="summary-label">Booked</div>
+                                <div class="card-indicator bg-booked-light"></div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-2 mb-3">
+                            <div class="summary-card">
+                                <i class="fas fa-user-check text-danger"></i>
+                                <div class="summary-value">@localRegistry</div>
+                                <div class="summary-label">Registry</div>
+                                <div class="card-indicator bg-registry-light"></div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-2 mb-3">
+                            <div class="summary-card">
+                                <i class="fas fa-times-circle text-cancelled"></i>
+                                <div class="summary-value">@localCancelled</div>
+                                <div class="summary-label">Cancelled</div>
+                                <div class="card-indicator bg-cancelled-light"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="status-legend">
                     <div class="legend-item"><div class="legend-box bg-available"></div> Available</div>
                     <div class="legend-item"><div class="legend-box bg-hold"></div> On Hold</div>
                     <div class="legend-item"><div class="legend-box bg-booked"></div> Booked</div>
-                    <div class="legend-item"><div class="legend-box bg-allotted"></div> Allotted</div>
+                    <div class="legend-item"><div class="legend-box bg-registry"></div> Registry</div>
+                    <div class="legend-item"><div class="legend-box bg-cancelled"></div> Cancelled</div>
                 </div>
 
                 <div class="plot-container">
                     @if (Model != null && Model.lstPlot != null && Model.lstPlot.Count > 0)
                     {
+                        string currentSite = "";
+                        string currentSector = "";
                         string currentBlock = "";
-                        <div class="plot-grid">
-                            @for (int i = 0; i < Model.lstPlot.Count; i++)
+                        bool inPlotGrid = false;
+
+                        for (int i = 0; i < Model.lstPlot.Count; i++)
+                        {
+                            var item = Model.lstPlot[i];
+
+                            if (currentSite != item.SiteName || currentSector != item.SectorName)
                             {
-                                var item = Model.lstPlot[i];
-                                if (currentBlock != item.BlockName)
+                                if (inPlotGrid)
                                 {
-                                    currentBlock = item.BlockName;
-                                    <div class="block-header"><i class="fas fa-cube"></i> Block: @currentBlock</div>
+                                    @:</div>
+                                    inPlotGrid = false;
                                 }
 
-                                string sClass = "available";
-                                string sIcon = "fa-check-circle";
-                                if (item.PlotStatus == "Booked") { sClass = "booked"; sIcon = "fa-lock"; }
-                                else if (item.PlotStatus == "Hold") { sClass = "hold"; sIcon = "fa-clock"; }
-                                else if (item.PlotStatus == "Allotted") { sClass = "allotted"; sIcon = "fa-user-check"; }
+                                currentSite = item.SiteName;
+                                currentSector = item.SectorName;
+                                currentBlock = "";
 
-                                <div class="plot-box @sClass" 
-                                     style="animation-delay: @((i % 40) * 0.02)s"
-                                     onclick="showDetails({
-                                         num: '@item.PlotNumber',
-                                         status: '@item.PlotStatus',
-                                         site: '@item.SiteName',
-                                         sector: '@item.SectorName',
-                                         block: '@item.BlockName',
-                                         area: '@item.PlotArea',
-                                         rate: '@item.PlotRate',
-                                         amount: '@item.PlotAmount',
-                                         plc: '@(string.IsNullOrEmpty(item.PLCCharge) || item.PLCCharge == "0" ? "N/A" : item.PLCCharge)'
-                                     })">
-                                    <span>@item.PlotNumber</span>
-                                    <i class="fas @sIcon"></i>
+                                <div class="w-100 mt-4 mb-3">
+                                    <div class="p-3 rounded-lg shadow-sm" style="background: linear-gradient(135deg, #001a2c 0%, #004191 100%); color: #fff; border-left: 8px solid #ff9800;">
+                                        <h4 class="m-0 font-weight-bold" style="font-size: 1.25rem; letter-spacing: 0.5px;">
+                                            <i class="fas fa-building mr-2 text-warning"></i> @currentSite <span class="text-white-50 mx-2">|</span> <i class="fas fa-layer-group mr-2 text-warning"></i> @currentSector
+                                        </h4>
+                                    </div>
                                 </div>
                             }
-                        </div>
+
+                            if (currentBlock != item.BlockName)
+                            {
+                                if (inPlotGrid)
+                                {
+                                    @:</div>
+                                    inPlotGrid = false;
+                                }
+
+                                currentBlock = item.BlockName;
+                                <div class="block-header">Block: @currentBlock</div>
+                            }
+
+                            if (!inPlotGrid)
+                            {
+                                @:<div class="plot-grid">
+                                inPlotGrid = true;
+                            }
+
+                            string sClass = "available";
+                            string sIcon = "fa-check-circle";
+                            if (item.PlotStatus == "Booked") { sClass = "booked"; sIcon = "fa-lock"; }
+                            else if (item.PlotStatus == "Hold") { sClass = "hold"; sIcon = "fa-clock"; }
+                            else if (item.PlotStatus == "Allotted" || item.PlotStatus == "Registry" || item.PlotStatus == "Registered") { sClass = "registry"; sIcon = "fa-user-check"; }
+
+                            <div class="plot-box @sClass" id="plot_box_@item.PlotID"
+                                 onclick="showDetails({
+                                     id: '@item.PlotID',
+                                     siteId: '@item.SiteID',
+                                     sectorId: '@item.SectorID',
+                                     blockId: '@item.BlockID',
+                                     num: '@item.PlotNumber',
+                                     status: '@item.PlotStatus',
+                                     site: '@item.SiteName',
+                                     sector: '@item.SectorName',
+                                     block: '@item.BlockName',
+                                     area: '@item.PlotArea',
+                                     size: '@item.PlotSize',
+                                     rate: '@item.PlotRate',
+                                     amount: '@item.PlotAmount',
+                                     plc: '@(string.IsNullOrEmpty(item.PLCCharge) || item.PLCCharge == "0" ? "N/A" : item.PLCCharge)'
+                                 })">
+                                <span>@item.PlotNumber</span>
+                                <i class="fas @sIcon"></i>
+                            </div>
+                        }
+
+                        if (inPlotGrid)
+                        {
+                            @:</div>
+                        }
                     }
                     else if (Model != null)
                     {
@@ -471,21 +699,38 @@
 
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
     <script>
+        var currentPlotData = null;
         function showDetails(data) {
+            currentPlotData = data;
             $('#panelPlotNumber').text(data.num);
             $('#panelStatus').text(data.status).removeClass().addClass('status-badge');
             
-            if(data.status == 'Available') $('#panelStatus').addClass('bg-success text-white');
-            else if(data.status == 'Booked') $('#panelStatus').addClass('bg-primary text-white');
-            else if(data.status == 'Hold') $('#panelStatus').addClass('bg-warning text-dark');
-            else $('#panelStatus').addClass('bg-danger text-white');
+            if(data.status == 'Available') {
+                $('#panelStatus').addClass('bg-success text-white');
+                $('#panelActions').show();
+            } else {
+                if(data.status == 'Booked') $('#panelStatus').addClass('bg-primary text-white');
+                else if(data.status == 'Hold') $('#panelStatus').addClass('bg-warning text-dark');
+                else $('#panelStatus').addClass('bg-danger text-white');
+                $('#panelActions').hide();
+            }
+
+            var cleanArea = parseFloat(data.area || 0);
+            var displayArea = !isNaN(cleanArea) ? Number(cleanArea.toFixed(2)) : data.area;
+
+            var cleanRate = parseFloat(data.rate || 0);
+            var displayRate = !isNaN(cleanRate) ? Number(cleanRate.toFixed(2)) : data.rate;
+
+            var cleanAmount = parseFloat(data.amount || 0);
+            var displayAmount = !isNaN(cleanAmount) ? Number(cleanAmount.toFixed(2)) : data.amount;
 
             $('#panelSite').text(data.site || 'N/A');
             $('#panelSector').text(data.sector || 'N/A');
-            $('#panelArea').text(data.area + ' Sq/Ft');
+            $('#panelArea').text(displayArea + ' Sq/Ft');
+            $('#panelSize').text(data.size && data.size != 'N/A' ? data.size + ' Ft' : 'N/A');
             $('#panelBlock').text(data.block);
-            $('#panelRate').text('Rs. ' + data.rate + ' / SqFt');
-            $('#panelAmount').text('Rs. ' + data.amount);
+            $('#panelRate').text('Rs. ' + displayRate + ' / SqFt');
+            $('#panelAmount').text('Rs. ' + displayAmount);
             $('#panelPLC').text(data.plc);
 
             $('#plotPanel').addClass('active');
@@ -531,6 +776,255 @@
                 }
             });
         }
+
+        function openHoldModal() {
+            if(!currentPlotData) return;
+            $('#holdPlotID').val(currentPlotData.id);
+            $('#holdSiteID').val(currentPlotData.siteId);
+            $('#holdSectorID').val(currentPlotData.sectorId);
+            $('#holdBlockID').val(currentPlotData.blockId);
+            $('#holdPlotNumber').val(currentPlotData.num);
+
+            $('#holdPlotNumBadge').text(currentPlotData.num);
+            $('#holdSiteBadge').text(currentPlotData.site + ' (' + currentPlotData.block + ')');
+            $('#holdModalOverlay').addClass('active');
+            $('#holdPlotModalCustom').addClass('active');
+        }
+
+        function closeHoldModal() {
+            $('#holdModalOverlay').removeClass('active');
+            $('#holdPlotModalCustom').removeClass('active');
+        }
+
+        var currentAssocName = "";
+
+        function fetchAssociateName() {
+            var id = $('#holdAssociateID').val().trim();
+            if (!id) {
+                currentAssocName = "";
+                $('#assocNameDisplay').html('').hide();
+                return;
+            }
+            $.ajax({
+                url: '/Home/GetAssociateName',
+                type: 'GET',
+                data: { loginId: id },
+                success: function (res) {
+                    if (res && res.Result == "1") {
+                        currentAssocName = res.Name;
+                        $('#assocNameDisplay').html('<i class="fas fa-check-circle mr-1"></i> ' + res.Name).removeClass('badge-danger').addClass('badge-success').show();
+                    } else {
+                        currentAssocName = "";
+                        $('#assocNameDisplay').html('<i class="fas fa-exclamation-triangle mr-1"></i> ' + (res.Message || 'Associate ID Not Found')).removeClass('badge-success').addClass('badge-danger').show();
+                    }
+                }
+            });
+        }
+
+        function submitHoldPlot() {
+            var assocId = $('#holdAssociateID').val().trim();
+            var custName = $('#holdCustomerName').val().trim();
+            var custMobile = $('#holdCustomerMobile').val().trim();
+            var assocName = currentAssocName;
+
+            if (!custName) { alert('Please enter Customer Name'); return; }
+            if (!custMobile || custMobile.length < 10) { alert('Please enter valid 10-digit Customer Mobile Number'); return; }
+
+            var $btn = $('#btnSubmitHold');
+            if ($btn.data('submitting') === true) return;
+            $btn.data('submitting', true).prop('disabled', true).html('<i class="fas fa-spinner fa-spin mr-1"></i> Submitting...');
+
+            var postData = {
+                PlotID: currentPlotData ? currentPlotData.id : '',
+                SiteID: currentPlotData ? currentPlotData.siteId : '',
+                SectorID: currentPlotData ? currentPlotData.sectorId : '',
+                BlockID: currentPlotData ? currentPlotData.blockId : '',
+                PlotNumber: currentPlotData ? currentPlotData.num : '',
+                AssociateID: assocId,
+                AssociateName: assocName,
+                CustomerName: custName,
+                CustomerMobile: custMobile,
+                Remark: $('#holdRemark').val()
+            };
+
+            $.ajax({
+                url: '/Home/SavePlotHoldAjax',
+                type: 'POST',
+                data: postData,
+                success: function (res) {
+                    if (res && res.Result == "1") {
+                        alert(res.Message);
+                        closeHoldModal();
+                        closePanel();
+                    } else {
+                        alert(res ? res.Message : 'Error submitting hold request');
+                    }
+                },
+                error: function (err) {
+                    alert('Error processing hold request.');
+                },
+                complete: function () {
+                    $btn.data('submitting', false).prop('disabled', false).html('<i class="fas fa-paper-plane mr-1"></i> Submit Hold Request');
+                }
+            });
+        }
+
+        function openEnquiryModal() {
+            if(!currentPlotData) return;
+            $('#enqPlotNumBadge').text(currentPlotData.num);
+            $('#enqSiteBadge').text(currentPlotData.site + ' (' + currentPlotData.block + ')');
+            $('#enquiryModalOverlay').addClass('active');
+            $('#enquiryModalCustom').addClass('active');
+        }
+
+        function closeEnquiryModal() {
+            $('#enquiryModalOverlay').removeClass('active');
+            $('#enquiryModalCustom').removeClass('active');
+        }
+
+        function submitEnquiry() {
+            var name = $('#enqName').val().trim();
+            var mobile = $('#enqMobile').val().trim();
+
+            if(!name) { alert('Please enter your Name'); return; }
+            if(!mobile || mobile.length < 10) { alert('Please enter valid 10-digit Mobile Number'); return; }
+
+            var $btn = $('#btnSubmitEnquiry');
+            if($btn.data('submitting') === true) return;
+            $btn.data('submitting', true).prop('disabled', true).html('<i class="fas fa-spinner fa-spin mr-1"></i> Submitting...');
+
+            var postData = {
+                PlotNumber: currentPlotData ? currentPlotData.num : '',
+                SiteName: currentPlotData ? currentPlotData.site : '',
+                SectorName: currentPlotData ? currentPlotData.sector : '',
+                BlockName: currentPlotData ? currentPlotData.block : '',
+                Name: name,
+                Mobile: mobile,
+                Message: $('#enqMessage').val()
+            };
+
+            $.ajax({
+                url: '/Home/SavePlotEnquiryAjax',
+                type: 'POST',
+                data: postData,
+                success: function(res) {
+                    if(res && res.Result == "1") {
+                        alert(res.Message);
+                        closeEnquiryModal();
+                        closePanel();
+                    } else {
+                        alert(res && res.Message ? res.Message : 'Error submitting enquiry');
+                    }
+                },
+                complete: function() {
+                    $btn.data('submitting', false).prop('disabled', false).html('<i class="fas fa-paper-plane mr-1"></i> Send Enquiry');
+                }
+            });
+        }
     </script>
+
+    <!-- Custom Modals for Hold Plot & Enquiry -->
+    <div class="overlay" id="holdModalOverlay" onclick="closeHoldModal()" style="z-index: 99998;"></div>
+    <div class="custom-modal" id="holdPlotModalCustom">
+        <div class="modal-header bg-warning text-dark p-3" style="border-radius: 12px 12px 0 0;">
+            <h5 class="m-0 font-weight-bold"><i class="fas fa-lock mr-2"></i> Request Plot Hold (Pending Approval)</h5>
+            <span style="cursor: pointer; font-size: 1.5rem; line-height: 1;" onclick="closeHoldModal()">&times;</span>
+        </div>
+        <div class="p-3">
+            <div class="alert alert-warning py-2 mb-3" style="font-size: 0.82rem;">
+                <strong>Plot No: <span id="holdPlotNumBadge">---</span></strong> | <span id="holdSiteBadge">---</span><br />
+                <span class="text-muted">Requests require Admin Approval. Approved holds remain active for 24 hours.</span>
+            </div>
+
+            <div class="form-group mb-2">
+                <label class="font-weight-bold small mb-1">Associate ID (Optional)</label>
+                <input type="text" id="holdAssociateID" class="form-control form-control-sm" placeholder="Enter Associate Login ID (e.g. GE1001)" onblur="fetchAssociateName()" />
+                <span id="assocNameDisplay" class="badge px-2 py-1 mt-1 font-weight-bold" style="display: none;"></span>
+            </div>
+
+            <div class="form-group mb-2">
+                <label class="font-weight-bold small mb-1">Customer Name <span class="text-danger">*</span></label>
+                <input type="text" id="holdCustomerName" class="form-control form-control-sm" placeholder="Enter Customer Full Name" />
+            </div>
+
+            <div class="form-group mb-2">
+                <label class="font-weight-bold small mb-1">Customer Mobile Number <span class="text-danger">*</span></label>
+                <input type="tel" id="holdCustomerMobile" class="form-control form-control-sm" placeholder="Enter 10-digit Mobile" maxlength="10" />
+            </div>
+
+            <div class="form-group mb-3">
+                <label class="font-weight-bold small mb-1">Remarks / Note</label>
+                <textarea id="holdRemark" class="form-control form-control-sm" rows="2" placeholder="Optional notes for Admin..."></textarea>
+            </div>
+
+            <div class="d-flex justify-content-end">
+                <button type="button" class="btn btn-sm btn-secondary mr-2" onclick="closeHoldModal()">Cancel</button>
+                <button type="button" id="btnSubmitHold" class="btn btn-sm btn-warning text-dark font-weight-bold px-3" onclick="submitHoldPlot()">
+                    <i class="fas fa-paper-plane mr-1"></i> Submit Hold Request
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="overlay" id="enquiryModalOverlay" onclick="closeEnquiryModal()" style="z-index: 99998;"></div>
+    <div class="custom-modal" id="enquiryModalCustom">
+        <div class="modal-header bg-primary text-white p-3" style="border-radius: 12px 12px 0 0;">
+            <h5 class="m-0 font-weight-bold"><i class="fas fa-paper-plane mr-2"></i> Plot Enquiry</h5>
+            <span style="cursor: pointer; font-size: 1.5rem; line-height: 1;" onclick="closeEnquiryModal()">&times;</span>
+        </div>
+        <div class="p-3">
+            <div class="alert alert-info py-2 mb-3" style="font-size: 0.85rem;">
+                Enquiring for <strong>Plot <span id="enqPlotNumBadge">---</span></strong> (<span id="enqSiteBadge">---</span>)
+            </div>
+
+            <div class="form-group mb-2">
+                <label class="font-weight-bold small mb-1">Your Name <span class="text-danger">*</span></label>
+                <input type="text" id="enqName" class="form-control form-control-sm" placeholder="Enter Full Name" />
+            </div>
+
+            <div class="form-group mb-2">
+                <label class="font-weight-bold small mb-1">Mobile Number <span class="text-danger">*</span></label>
+                <input type="tel" id="enqMobile" class="form-control form-control-sm" placeholder="Enter 10-digit Mobile" maxlength="10" />
+            </div>
+
+            <div class="form-group mb-3">
+                <label class="font-weight-bold small mb-1">Questions / Message</label>
+                <textarea id="enqMessage" class="form-control form-control-sm" rows="3" placeholder="Interested in plot rates, EMI options, site visit..."></textarea>
+            </div>
+
+            <div class="d-flex justify-content-end">
+                <button type="button" class="btn btn-sm btn-secondary mr-2" onclick="closeEnquiryModal()">Close</button>
+                <button type="button" id="btnSubmitEnquiry" class="btn btn-sm btn-primary font-weight-bold px-3" onclick="submitEnquiry()">
+                    <i class="fas fa-paper-plane mr-1"></i> Send Enquiry
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .custom-modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.9);
+            background: #ffffff !important;
+            width: 90%;
+            max-width: 440px;
+            border-radius: 12px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.5);
+            z-index: 99999 !important;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            backdrop-filter: none !important;
+            -webkit-backdrop-filter: none !important;
+        }
+        .custom-modal.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translate(-50%, -50%) scale(1);
+        }
+    </style>
 </body>
 </html>
+

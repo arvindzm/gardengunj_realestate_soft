@@ -26,3 +26,8 @@ x86/
 livefinal/
 publish/
 pub/
+
+# Scratch & Temporary Data Files
+GurdengunjSoftware/scratch/
+*.csv
+*.xlsx

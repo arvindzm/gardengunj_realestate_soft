@@ -50,7 +50,7 @@ namespace RealEstateRegalSpace.Controllers
                     }
 
                     obj.paymentDetails = ds.Tables[1];
-                    return View("~/Views/Admin/PrintCustomerLedger.cshtml", obj);
+                    return View("~/Views/Admin/PrintLedger.cshtml", obj);
                 }
                 else
                 {

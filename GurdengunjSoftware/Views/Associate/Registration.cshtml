@@ -5,160 +5,123 @@
     Layout = "~/Views/Shared/Layout.cshtml";
 }
 
+<style>
+    .associate-page-title {
+        font-size: 1.75rem;
+        font-weight: 800;
+        color: #1e293b;
+        margin-bottom: 1.5rem;
+    }
+    .modern-card {
+        background: #ffffff;
+        border-radius: 16px;
+        border: none;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+        padding: 28px;
+        margin-bottom: 24px;
+    }
+    .form-control-modern {
+        border-radius: 10px !important;
+        border: 1px solid #cbd5e1 !important;
+        height: 44px !important;
+        font-size: 0.925rem !important;
+        font-weight: 500 !important;
+        color: #1e293b !important;
+        padding: 8px 16px !important;
+    }
+    .form-label-modern {
+        font-weight: 600;
+        font-size: 0.875rem;
+        color: #475569;
+        margin-bottom: 6px;
+    }
+    .btn-save-modern {
+        background: #10b981 !important;
+        border: none !important;
+        border-radius: 10px !important;
+        height: 44px !important;
+        font-weight: 700 !important;
+        font-size: 0.95rem !important;
+        color: #ffffff !important;
+        padding: 0 32px !important;
+        box-shadow: 0 4px 14px rgba(16, 185, 129, 0.3) !important;
+        transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+    }
+    .btn-save-modern:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 6px 18px rgba(16, 185, 129, 0.4) !important;
+        color: #ffffff !important;
+    }
+</style>
 
-@section Header{
-    <div class="row align-items-center">
-        <div class="col-md-8">
-            <div class="page-header-title">
-                <h5 class="m-b-10">Registration </h5>
+<div class="container-fluid pt-3">
+    <h2 class="associate-page-title">Registration</h2>
 
-            </div>
-        </div>
-        <div class="col-md-4">
-            <ul class="breadcrumb">
-                <li class="breadcrumb-item">
-                    <a href="javascript:void(0)"> <i class="fa fa-home"></i> </a>
-                </li>
-
-
-                <li class="breadcrumb-item">
-                    <a href="javascript:void(0);">Registration</a>
-                </li>
-
-            </ul>
-        </div>
-    </div>
-}
-
-@using (Html.BeginForm("Registration", "Associate", FormMethod.Post, new { @id = "form1", enctype = "multipart/form-data" }))
-{
-
-
-    <div class="app-main">
-        <!-- BEGIN .profile-header -->
-        <header class="main-heading">
-            <div class="container-fluid">
-                <div class="row">
-                    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6">
-                        <div class="page-icon">
-                            <i class="icon-laptop_windows"></i>
-                        </div>
-                        <div class="page-title">
-                            <h3>Registration</h3>
-                            @*<h6 class="sub-heading">Welcome to Kingfisher Admin Template</h6>*@
-                        </div>
-                    </div>
-                    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6">
-                        <div class="daterange-container">
-                            <div id="reportrange1" class="form-control">
-                                <span> @DateTime.Now.ToString("MMM dd yyyy") </span> <i class="icon-chevron-down down-arrow"></i>
-                            </div>
-                        </div>
+    @using (Html.BeginForm("Registration", "Associate", FormMethod.Post, new { @id = "form1", enctype = "multipart/form-data" }))
+    {
+        <div class="modern-card">
+            <div class="row mb-3">
+                <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 mb-3">
+                    <label class="form-label-modern">Sponsor ID / Refer By</label>
+                    @Html.TextBoxFor(m => m.sponserId, new { @class = "form-control form-control-modern", @placeHolder = "Refer By", @onchange = "return GetMemberName();" })
+                </div>
+                <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 mb-3">
+                    <label class="form-label-modern">Sponsor Name</label>
+                    @Html.TextBoxFor(m => m.sponsorName, new { @class = "form-control form-control-modern", @Disabled = "true" })
+                </div>
+                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-3">
+                    <label class="form-label-modern">Leg Selection</label>
+                    <div>
+                        @Html.HiddenFor(m => m.leg)
+                        <label class="mr-4 font-weight-bold"><input type="radio" value="Left" @ViewBag.LeftChecked id="left" name="Leg" /> Left</label>
+                        <label class="font-weight-bold"><input type="radio" value="Right" id="right" name="Leg" @ViewBag.RightChecked /> Right</label>
                     </div>
                 </div>
-            </div>
-        </header>
-        <!-- END: .profile-header -->
-        <div class="main-content">
-            <div class="row gutters">
-                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
-                    <div class="card custom-bdr">
-                        <div class="card-header">Registration</div>
-                        <div class="card-body">
-                            <div class="row gutters">
-                                <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
-                                    <div class="form-group">
-                                        @Html.TextBoxFor(m => m.sponserId, new { @class = "form-control", @placeHolder = "Refer By", @onchange = "return GetMemberName();" })
-
-                                    </div>
-                                </div>
-                                <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
-                                    <div class="form-group">
-                                        @Html.TextBoxFor(m => m.sponsorName, new { @class = "form-control", @Disabled = "true" })
-                                    </div>
-                                </div>
-                                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
-                                    <div class="form-group">
-                                        @Html.HiddenFor(m => m.leg)
-                                        <input type="radio" value="Left" @ViewBag.LeftChecked id="left" name="Leg" /> Left
-
-                                        &nbsp;&nbsp;&nbsp;&nbsp;
-                                        <input type="radio" value="Right" id="right" name="Leg" @ViewBag.RightChecked /> Right
-                                    </div>
-                                </div>
-                                <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
-                                    <div class="form-group">
-                                        @Html.TextBoxFor(m => m.firstName, new { @class = "form-control", @placeHolder = "First Name" })
-
-                                    </div>
-                                </div>
-                                <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
-                                    <div class="form-group">
-                                        @Html.TextBoxFor(m => m.lastName, new { @class = "form-control", @placeHolder = "Last Name" })
-
-                                    </div>
-                                </div>
-                                <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
-                                    <div class="form-group">
-                                        @Html.TextBoxFor(m => m.emailId, new { @class = "form-control", @placeHolder = "Email Id" })
-
-                                    </div>
-                                </div>
-                                <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
-                                    <div class="form-group">
-                                        @Html.TextBoxFor(m => m.mobileNo, new { @class = "form-control", @placeHolder = "Mobile No" })
-
-                                    </div>
-                                </div>
-                                <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
-                                    <div class="form-group">
-                                        @Html.DropDownListFor(q => q.gender, new SelectList(ViewBag.ddlGender, "Value", "Text"), new { @class = "form-control" })
-                                    </div>
-                                </div>
-                                <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
-                                    <div class="form-group">
-                                        @Html.TextBoxFor(m => m.panCard, new { @class = "form-control", @placeHolder = "Pan Card", @onchage = "return validatepan();" })
-
-                                    </div>
-                                </div>
-                                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
-                                    <div class="form-group">
-                                        @Html.TextAreaFor(m => m.address, new { @class = "form-control", @placeHolder = "Address" })
-
-                                    </div>
-                                </div>
-                                <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
-                                    <div class="form-group">
-                                        @Html.TextBoxFor(m => m.pinCode, new { @class = "form-control", @placeHolder = "Pincode", @onchange = "return getstatecity();" })
-
-                                    </div>
-                                </div>
-                                <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
-                                    <div class="form-group">
-                                        <input type="text" class="form-control" id="State" placeholder="State" readonly="readonly" />
-
-                                    </div>
-                                </div>
-                                <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
-                                    <div class="form-group">
-                                        <input type="text" class="form-control" id="City" placeholder="City" readonly="readonly" />
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="actions clearfix">
-                                <input type="submit" class="btn btn-primary btn-block" value="Sign Up" onclick="return fvalidate();" />
-                            </div>
-
-                            @*<a href="login.html" class="additional-link">Have an Account? <span>Login Now</span></a>*@
-                        </div>
-                    </div>
+                <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 mb-3">
+                    <label class="form-label-modern">First Name</label>
+                    @Html.TextBoxFor(m => m.firstName, new { @class = "form-control form-control-modern", @placeHolder = "First Name" })
+                </div>
+                <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 mb-3">
+                    <label class="form-label-modern">Last Name</label>
+                    @Html.TextBoxFor(m => m.lastName, new { @class = "form-control form-control-modern", @placeHolder = "Last Name" })
+                </div>
+                <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 mb-3">
+                    <label class="form-label-modern">Email ID</label>
+                    @Html.TextBoxFor(m => m.emailId, new { @class = "form-control form-control-modern", @placeHolder = "Email Id" })
+                </div>
+                <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 mb-3">
+                    <label class="form-label-modern">Mobile No</label>
+                    @Html.TextBoxFor(m => m.mobileNo, new { @class = "form-control form-control-modern", @placeHolder = "Mobile No" })
+                </div>
+                <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 mb-3">
+                    <label class="form-label-modern">Gender</label>
+                    @Html.DropDownListFor(q => q.gender, new SelectList(ViewBag.ddlGender, "Value", "Text"), new { @class = "form-control form-control-modern" })
+                </div>
+                <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 mb-3">
+                    <label class="form-label-modern">PAN Card</label>
+                    @Html.TextBoxFor(m => m.panCard, new { @class = "form-control form-control-modern", @placeHolder = "Pan Card", @onchange = "return validatepan();" })
+                </div>
+                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-3">
+                    <label class="form-label-modern">Address</label>
+                    @Html.TextAreaFor(m => m.address, new { @class = "form-control form-control-modern", @placeHolder = "Address", style = "height: 60px;" })
+                </div>
+                <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 mb-3">
+                    <label class="form-label-modern">Pincode</label>
+                    @Html.TextBoxFor(m => m.pinCode, new { @class = "form-control form-control-modern", @placeHolder = "Pincode", @onchange = "return getstatecity();" })
+                </div>
+                <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 mb-3">
+                    <label class="form-label-modern">State</label>
+                    <input type="text" class="form-control form-control-modern" id="State" placeholder="State" readonly="readonly" />
+                </div>
+                <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 mb-3">
+                    <label class="form-label-modern">City</label>
+                    <input type="text" class="form-control form-control-modern" id="City" placeholder="City" readonly="readonly" />
                 </div>
             </div>
 
+            <div class="mt-3">
+                <input type="submit" class="btn btn-save-modern" value="Sign Up" onclick="return fvalidate();" />
+            </div>
         </div>
-
-
-    </div>
-}
-
-
+    }
+</div>
